@@ -1,0 +1,6 @@
+@echo off
+echo Activating virtual environment...
+call %~dp0env\Scripts\activate.bat
+
+echo Starting the backend server...
+python %~dp0main.py

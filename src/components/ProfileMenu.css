@@ -1,0 +1,164 @@
+.profile-menu {
+  position: relative;
+}
+
+.profile-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: #444444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.profile-button:hover .profile-avatar {
+  background-color: #555555;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background-color: #222222;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdown-appear 0.2s ease-out;
+}
+
+@keyframes dropdown-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #444444;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-name {
+  font-weight: 600;
+  color: white;
+}
+
+.profile-email {
+  font-size: 0.8rem;
+  color: #aaaaaa;
+}
+
+.menu-items {
+  padding: 8px 0;
+  border-bottom: 1px solid #444444;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: #333333;
+}
+
+.menu-icon {
+  font-size: 1rem;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-footer {
+  padding: 8px 0;
+}
+
+.menu-item.logout {
+  color: #ff6b6b;
+}
+
+/* Settings icon */
+.settings-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}.profile-st
+atus-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: #10a37f; /* Green color similar to ChatGPT */
+  border-radius: 50%;
+  border: 2px solid #222222;
+}
+
+/* Improve the avatar styling to be more like ChatGPT */
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: #10a37f; /* ChatGPT green */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+/* Add a subtle hover effect for menu items */
+.menu-item:hover {
+  background-color: #2a2a2a;
+}
+
+/* Add a premium badge option */
+.premium-badge {
+  background-color: #f8c36c;
+  color: #000;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-left: 8px;
+}

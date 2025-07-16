@@ -1,0 +1,18 @@
+.audio-visualizer {
+  width: 200px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.audio-visualizer.active {
+  opacity: 1;
+}
+
+.audio-visualizer canvas {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+}

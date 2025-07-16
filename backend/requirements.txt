@@ -1,0 +1,18 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+python-dotenv
+httpx
+requests
+openai
+
+# Audio processing libraries
+librosa
+soundfile
+pydub
+numpy
+scipy
+
+# For visualization
+matplotlib

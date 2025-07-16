@@ -1,0 +1,50 @@
+.message-input {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #000000;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  margin-top: 1rem;
+  align-items: flex-end;
+}
+
+.message-textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  min-height: 20px;
+  max-height: 120px;
+  padding: 0.5rem 0;
+  background-color: #000000;
+  color: white;
+}
+
+.message-textarea::placeholder {
+  color: #aaaaaa;
+}
+
+.send-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  align-self: flex-end;
+}
+
+.send-button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.send-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
