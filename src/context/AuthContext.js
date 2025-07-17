@@ -12,22 +12,26 @@ export function AuthProvider({ children }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    // Always set loading to false initially to show auth forms
+    setIsLoading(false);
+    
     // Check if database is configured
     const checkInitialization = () => {
       const initialized = databaseConfig.isInitialized();
       setIsInitialized(initialized);
       
       if (initialized) {
-        // Initialize auth listener
-        authService.initializeAuthListener();
-        
-        // Add auth state listener
-        authService.addAuthStateListener((user) => {
-          setUser(user);
-          setIsLoading(false);
-        });
-      } else {
-        setIsLoading(false);
+        try {
+          // Initialize auth listener only if database is configured
+          authService.initializeAuthListener();
+          
+          // Add auth state listener
+          authService.addAuthStateListener((user) => {
+            setUser(user);
+          });
+        } catch (error) {
+          console.error('Error initializing auth:', error);
+        }
       }
     };
 
@@ -42,11 +46,6 @@ export function AuthProvider({ children }) {
 
     return () => {
       clearInterval(interval);
-      // Remove auth state listener
-      authService.removeAuthStateListener((user) => {
-        setUser(user);
-        setIsLoading(false);
-      });
     };
   }, [isInitialized]);
 

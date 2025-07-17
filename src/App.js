@@ -75,29 +75,54 @@ function AppContent() {
     );
   }
 
-  // Show database configuration if not initialized
-  if (!isInitialized) {
-    return (
-      <div className="app">
-        <header className="app-header">
-          <h1>AudioChat</h1>
-        </header>
-        <div className="app-content">
-          <div className="setup-container">
-            <h2>Welcome to AudioChat</h2>
-            <p>Please configure your database connection to get started.</p>
-            <SettingsPage 
-              onClose={() => {}} 
-              initialTab="database"
-            />
+  // Show authentication forms FIRST if not logged in
+  if (!user) {
+    // If database is not configured, show setup message
+    if (!isInitialized) {
+      return (
+        <div className="app">
+          <header className="app-header">
+            <h1>AudioChat</h1>
+          </header>
+          <div className="app-content">
+            <div className="setup-container">
+              <h2>Welcome to AudioChat</h2>
+              <p>Your AI-powered audio engineering assistant</p>
+              <div className="setup-steps">
+                <div className="setup-step active">
+                  <span className="step-number">1</span>
+                  <div className="step-content">
+                    <h3>Configure Database</h3>
+                    <p>First, let's set up your database connection</p>
+                    <button 
+                      className="setup-button"
+                      onClick={() => setActivePage('settings')}
+                    >
+                      Configure Database
+                    </button>
+                  </div>
+                </div>
+                <div className="setup-step">
+                  <span className="step-number">2</span>
+                  <div className="step-content">
+                    <h3>Sign In</h3>
+                    <p>Then you can sign in or create an account</p>
+                  </div>
+                </div>
+              </div>
+              {activePage && (
+                <SettingsPage 
+                  onClose={() => setActivePage(null)} 
+                  initialTab="database"
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  // Show authentication forms if not logged in
-  if (!user) {
+    // If database is configured, show auth forms
     return (
       <div className="app">
         <header className="app-header">
@@ -105,6 +130,10 @@ function AppContent() {
         </header>
         <div className="app-content">
           <div className="auth-container">
+            <div className="auth-welcome">
+              <h2>Welcome to AudioChat</h2>
+              <p>Your AI-powered audio engineering assistant</p>
+            </div>
             {authMode === 'login' ? (
               <LoginForm 
                 onSuccess={() => {}}
@@ -121,6 +150,8 @@ function AppContent() {
       </div>
     );
   }
+
+  // At this point, user is authenticated and database is configured
 
   // Show main app interface for authenticated users
   return (

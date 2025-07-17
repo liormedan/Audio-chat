@@ -1,7 +1,8 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Depends, Request
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Depends, Request, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import uvicorn
@@ -14,12 +15,17 @@ from datetime import datetime
 import uuid
 import numpy as np
 from pathlib import Path
+import jwt
+import requests
 
 # Audio processing imports
 try:
     import librosa
     import soundfile as sf
     from pydub import AudioSegment
+    from audio_processing import audio_processor
+    from advanced_audio_effects import advanced_effects
+    from audio_export import audio_exporter
 except ImportError:
     logging.warning("Audio processing libraries not installed. Some features may not work.")
     pass
@@ -79,6 +85,127 @@ class TextToSpeechRequest(BaseModel):
 # Mock database
 conversations = {}
 api_keys = {}
+user_files = {}  # Store user files mapping: user_id -> [file_info]
+
+# Authentication setup
+security = HTTPBearer()
+
+# Authentication functions
+async def verify_google_token(token: str):
+    """Verify Google ID token"""
+    try:
+        # Load Google client ID from environment
+        google_client_id = os.environ.get("GOOGLE_CLIENT_ID")
+        if not google_client_id:
+            logger.warning("GOOGLE_CLIENT_ID not set in environment")
+            # Use the client ID from the client_secret file as fallback
+            google_client_id = "484800218204-8snu9s0vvc9176aqug9759ulh1rio431.apps.googleusercontent.com"
+        
+        # In production, you would verify the token with Google's API
+        # For development purposes, we'll use a simplified approach
+        # This should be replaced with proper verification in production
+        
+        # Decode the token (without verification for development)
+        # WARNING: In production, use proper verification with Google's API
+        try:
+            # Simple JWT decode without verification (FOR DEVELOPMENT ONLY)
+            payload = jwt.decode(token, options={"verify_signature": False})
+            
+            # Check if token is for our app
+            if payload.get("aud") != google_client_id:
+                logger.warning(f"Token audience mismatch: {payload.get('aud')} vs {google_client_id}")
+                return None
+                
+            return {
+                "uid": payload.get("sub"),
+                "email": payload.get("email"),
+                "name": payload.get("name")
+            }
+        except jwt.PyJWTError as e:
+            logger.error(f"JWT decode error: {str(e)}")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error verifying Google token: {str(e)}")
+        return None
+
+async def verify_firebase_token(token: str):
+    """Verify Firebase ID token"""
+    try:
+        # For development, we'll use a simplified approach
+        # This should be replaced with Firebase Admin SDK verification in production
+        
+        # Try to decode the token (without verification for development)
+        try:
+            # Simple JWT decode without verification (FOR DEVELOPMENT ONLY)
+            payload = jwt.decode(token, options={"verify_signature": False})
+            
+            # Check if it looks like a Firebase token
+            if "firebase" not in payload:
+                return None
+                
+            return {
+                "uid": payload.get("user_id") or payload.get("sub"),
+                "email": payload.get("email"),
+                "name": payload.get("name")
+            }
+        except jwt.PyJWTError:
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error verifying Firebase token: {str(e)}")
+        return None
+
+async def verify_supabase_token(token: str):
+    """Verify Supabase JWT token"""
+    try:
+        # For development, we'll use a simplified approach
+        # This should be replaced with proper JWT verification in production
+        
+        # Try to decode the token (without verification for development)
+        try:
+            # Simple JWT decode without verification (FOR DEVELOPMENT ONLY)
+            payload = jwt.decode(token, options={"verify_signature": False})
+            
+            # Check if it looks like a Supabase token
+            if "aud" not in payload or payload.get("aud") != "authenticated":
+                return None
+                
+            return {
+                "sub": payload.get("sub"),
+                "email": payload.get("email")
+            }
+        except jwt.PyJWTError:
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error verifying Supabase token: {str(e)}")
+        return None
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get current authenticated user"""
+    token = credentials.credentials
+    
+    # Try Google OAuth first
+    user = await verify_google_token(token)
+    if user:
+        return {"id": user["uid"], "email": user.get("email"), "provider": "google"}
+    
+    # Try Firebase
+    user = await verify_firebase_token(token)
+    if user:
+        return {"id": user["uid"], "email": user.get("email"), "provider": "firebase"}
+    
+    # Try Supabase
+    user = await verify_supabase_token(token)
+    if user:
+        return {"id": user["sub"], "email": user.get("email"), "provider": "supabase"}
+    
+    # For development, allow a special test token
+    if token == "dev_test_token":
+        return {"id": "test_user_123", "email": "test@example.com", "provider": "development"}
+    
+    raise HTTPException(status_code=401, detail="Invalid authentication token")
 
 # Routes
 @app.get("/")
@@ -229,6 +356,7 @@ class AudioProcessingRequest(BaseModel):
     file_id: str
     instructions: str
     effects: Optional[List[Dict[str, Any]]] = None
+    segment: Optional[Dict[str, float]] = None  # {"start": start_time_in_seconds, "end": end_time_in_seconds}
 
 class AudioEffect(BaseModel):
     type: str  # eq, compression, reverb, etc.
@@ -325,23 +453,40 @@ def apply_reverb(audio_data, sample_rate, parameters):
         logger.error(f"Error applying reverb: {str(e)}")
         return audio_data
 
-# Audio file routes
+# Audio file routes with authentication
 @app.post("/api/audio/upload")
-async def upload_audio(file: UploadFile = File(...)):
+async def upload_audio(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
     """
-    Upload an audio file for processing
+    Upload an audio file for processing (authenticated)
     """
     try:
+        # Validate file size (50MB limit)
+        max_size = 50 * 1024 * 1024
+        file_content = await file.read()
+        if len(file_content) > max_size:
+            raise HTTPException(status_code=413, detail="File too large. Maximum size is 50MB.")
+        
+        # Validate file type
+        allowed_types = ['audio/wav', 'audio/mp3', 'audio/mpeg', 'audio/ogg', 'audio/flac', 'audio/aac', 'audio/m4a']
+        if file.content_type not in allowed_types:
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload a valid audio file.")
+        
         # Generate a unique ID for the file
         file_id = str(uuid.uuid4())
         file_extension = os.path.splitext(file.filename)[1]
-        file_path = UPLOAD_DIR / f"{file_id}{file_extension}"
+        user_id = current_user["id"]
+        
+        # Create user-specific directory
+        user_upload_dir = UPLOAD_DIR / user_id
+        user_upload_dir.mkdir(exist_ok=True)
+        
+        file_path = user_upload_dir / f"{file_id}{file_extension}"
         
         # Save the uploaded file
         with open(file_path, "wb") as f:
-            f.write(await file.read())
+            f.write(file_content)
         
-        logger.info(f"Audio file saved to {file_path}")
+        logger.info(f"Audio file saved to {file_path} for user {user_id}")
         
         # Get basic audio information
         try:
@@ -358,29 +503,47 @@ async def upload_audio(file: UploadFile = File(...)):
                 "duration": duration,
                 "sample_rate": sr,
                 "channels": 1 if len(y.shape) == 1 else y.shape[0],
-                "waveform": waveform
+                "waveform": waveform,
+                "size": len(file_content),
+                "uploaded_at": datetime.now().isoformat(),
+                "user_id": user_id
             }
         except Exception as e:
             logger.error(f"Error analyzing audio: {str(e)}")
             audio_info = {
                 "file_id": file_id,
-                "filename": file.filename
+                "filename": file.filename,
+                "size": len(file_content),
+                "uploaded_at": datetime.now().isoformat(),
+                "user_id": user_id
             }
         
+        # Store file info in user files database
+        if user_id not in user_files:
+            user_files[user_id] = []
+        user_files[user_id].append(audio_info)
+        
         return audio_info
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error uploading audio: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/audio/process")
-async def process_audio(request: AudioProcessingRequest):
+async def process_audio(request: AudioProcessingRequest, current_user: dict = Depends(get_current_user)):
     """
-    Process an audio file based on natural language instructions
+    Process an audio file based on natural language instructions (authenticated)
+    Uses advanced audio processing capabilities to interpret and apply effects
+    Supports processing specific segments of audio
     """
     try:
-        # Find the original file
+        # Find the original file in user's directory
         file_id = request.file_id
-        original_files = list(UPLOAD_DIR.glob(f"{file_id}.*"))
+        user_id = current_user["id"]
+        user_upload_dir = UPLOAD_DIR / user_id
+        
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
         
         if not original_files:
             raise HTTPException(status_code=404, detail="Audio file not found")
@@ -391,40 +554,61 @@ async def process_audio(request: AudioProcessingRequest):
         # Load the audio file
         y, sr = librosa.load(original_file, sr=None)
         
-        # Process the instructions using LLM to determine which effects to apply
-        # For now, we'll use a simplified approach based on keywords
-        instructions = request.instructions.lower()
-        processed_audio = y.copy()
+        # Extract segment if specified
+        full_audio = y.copy()
+        segment_info = None
         
-        processing_steps = []
+        if request.segment:
+            start_time = request.segment.get("start", 0)
+            end_time = request.segment.get("end", None)
+            
+            # Convert time to samples
+            start_sample = int(start_time * sr)
+            
+            if end_time is not None:
+                end_sample = int(end_time * sr)
+                # Ensure end sample is within bounds
+                end_sample = min(end_sample, len(y))
+            else:
+                end_sample = len(y)
+            
+            # Extract segment
+            y = y[start_sample:end_sample]
+            
+            # Save segment info for response
+            segment_info = {
+                "start": start_time,
+                "end": end_time if end_time is not None else start_time + (len(y) / sr),
+                "duration": len(y) / sr
+            }
+            
+            logger.info(f"Processing segment: {start_time}s to {segment_info['end']}s")
         
-        # Apply effects based on instructions
-        if "eq" in instructions or "equalization" in instructions or "equalizer" in instructions:
-            # Extract EQ parameters from instructions or use defaults
-            eq_params = {
-                "low_shelf": 3 if "bass" in instructions or "low" in instructions else 0,
-                "high": 2 if "treble" in instructions or "high" in instructions else 0
-            }
-            processed_audio = apply_eq(processed_audio, sr, eq_params)
-            processing_steps.append(f"Applied EQ: {'+' if eq_params['low_shelf'] > 0 else ''}{eq_params['low_shelf']}dB low, {'+' if eq_params['high'] > 0 else ''}{eq_params['high']}dB high")
+        # Analyze the audio to get its characteristics
+        audio_analysis = audio_processor.analyze_audio(y, sr)
+        logger.info(f"Audio analysis: {audio_analysis}")
+        
+        # Process the audio using our advanced audio processor
+        if request.effects:
+            # Use explicitly provided effects chain if available
+            processed_audio, processing_steps = audio_processor.process_audio(
+                y, sr, request.instructions, request.effects
+            )
+        else:
+            # Otherwise, parse natural language instructions
+            processed_audio, processing_steps = audio_processor.process_audio(
+                y, sr, request.instructions
+            )
+        
+        # If we processed a segment, merge it back into the full audio
+        if segment_info:
+            start_sample = int(segment_info["start"] * sr)
+            end_sample = start_sample + len(processed_audio)
             
-        if "compress" in instructions or "compression" in instructions:
-            # Extract compression parameters from instructions or use defaults
-            comp_params = {
-                "threshold": -20,
-                "ratio": 4 if "heavy" in instructions else 2
-            }
-            processed_audio = apply_compression(processed_audio, comp_params)
-            processing_steps.append(f"Applied compression: {comp_params['threshold']}dB threshold, {comp_params['ratio']}:1 ratio")
-            
-        if "reverb" in instructions or "echo" in instructions or "space" in instructions:
-            # Extract reverb parameters from instructions or use defaults
-            reverb_params = {
-                "room_size": 0.8 if "large" in instructions or "hall" in instructions else 0.5,
-                "wet_level": 0.5 if "wet" in instructions or "more" in instructions else 0.33
-            }
-            processed_audio = apply_reverb(processed_audio, sr, reverb_params)
-            processing_steps.append(f"Applied reverb: {int(reverb_params['room_size'] * 100)}% room size")
+            # Create a copy of the full audio and replace the segment
+            merged_audio = full_audio.copy()
+            merged_audio[start_sample:end_sample] = processed_audio
+            processed_audio = merged_audio
         
         # Save the processed audio
         processed_file_id = str(uuid.uuid4())
@@ -437,7 +621,9 @@ async def process_audio(request: AudioProcessingRequest):
             "processed_file_id": processed_file_id,
             "processing_steps": processing_steps,
             "audio_url": f"/audio/{processed_file_path.name}",
-            "instructions": request.instructions
+            "instructions": request.instructions,
+            "audio_analysis": audio_analysis,
+            "segment": segment_info
         }
         
         return response
@@ -445,36 +631,90 @@ async def process_audio(request: AudioProcessingRequest):
         logger.error(f"Error processing audio: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/audio/{file_id}")
-async def get_audio_file(file_id: str):
+# User file management endpoints
+@app.get("/api/user/files")
+async def get_user_files(current_user: dict = Depends(get_current_user)):
     """
-    Get an audio file by ID
+    Get all files for the authenticated user
     """
     try:
+        user_id = current_user["id"]
+        return user_files.get(user_id, [])
+    except Exception as e:
+        logger.error(f"Error retrieving user files: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/user/files/{file_id}")
+async def delete_user_file(file_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Delete a user's file
+    """
+    try:
+        user_id = current_user["id"]
+        
+        # Find and remove file from user's file list
+        if user_id in user_files:
+            user_files[user_id] = [f for f in user_files[user_id] if f["file_id"] != file_id]
+        
+        # Delete physical file
+        user_upload_dir = UPLOAD_DIR / user_id
+        file_deleted = False
+        
+        for file_path in user_upload_dir.glob(f"{file_id}.*"):
+            file_path.unlink()
+            file_deleted = True
+            logger.info(f"Deleted file {file_path} for user {user_id}")
+        
+        if not file_deleted:
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        return {"status": "success", "message": "File deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting user file: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/audio/{file_id}")
+async def get_audio_file(file_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Get an audio file by ID (authenticated)
+    """
+    try:
+        user_id = current_user["id"]
+        
         # Check processed files first
         processed_files = list(PROCESSED_DIR.glob(f"{file_id}.*"))
         if processed_files:
             return FileResponse(processed_files[0])
             
-        # Then check original files
-        original_files = list(UPLOAD_DIR.glob(f"{file_id}.*"))
+        # Then check user's original files
+        user_upload_dir = UPLOAD_DIR / user_id
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
         if original_files:
             return FileResponse(original_files[0])
             
         raise HTTPException(status_code=404, detail="Audio file not found")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving audio file: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/audio/{file_id}/waveform")
-async def get_audio_waveform(file_id: str, points: int = 1000):
+async def get_audio_waveform(file_id: str, points: int = 1000, current_user: dict = Depends(get_current_user)):
     """
-    Get waveform data for visualization
+    Get waveform data for visualization (authenticated)
     """
     try:
+        user_id = current_user["id"]
+        
         # Find the file
         processed_files = list(PROCESSED_DIR.glob(f"{file_id}.*"))
-        original_files = list(UPLOAD_DIR.glob(f"{file_id}.*"))
+        
+        # Check user's original files
+        user_upload_dir = UPLOAD_DIR / user_id
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
         
         file_path = None
         if processed_files:
@@ -497,6 +737,118 @@ async def get_audio_waveform(file_id: str, points: int = 1000):
             "sample_rate": sr,
             "duration": librosa.get_duration(y=y, sr=sr)
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error generating waveform: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))@ap
+p.post("/api/audio/export")
+async def export_audio(
+    file_id: str = Form(...),
+    format: str = Form(...),
+    quality: str = Form("high"),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Export audio file in different formats and quality settings
+    
+    Args:
+        file_id: ID of the audio file to export
+        format: Output format ('wav', 'mp3', 'flac', 'ogg', 'aac')
+        quality: Quality setting ('low', 'medium', 'high')
+    """
+    try:
+        user_id = current_user["id"]
+        
+        # Find the file (check processed files first, then user's original files)
+        file_path = None
+        
+        # Check processed files first
+        processed_files = list(PROCESSED_DIR.glob(f"{file_id}.*"))
+        if processed_files:
+            file_path = processed_files[0]
+        else:
+            # Then check user's original files
+            user_upload_dir = UPLOAD_DIR / user_id
+            original_files = list(user_upload_dir.glob(f"{file_id}.*"))
+            if original_files:
+                file_path = original_files[0]
+        
+        if not file_path:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+        
+        # Load the audio file
+        y, sr = librosa.load(file_path, sr=None)
+        
+        # Export the audio in the requested format
+        export_result = audio_exporter.export_audio(
+            audio_data=y,
+            sample_rate=sr,
+            file_id=f"export_{file_id}",
+            format=format,
+            quality=quality
+        )
+        
+        return export_result
+    except Exception as e:
+        logger.error(f"Error exporting audio: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/audio/formats")
+async def get_supported_formats():
+    """
+    Get list of supported audio export formats
+    """
+    formats = [
+        {
+            "id": "wav",
+            "name": "WAV",
+            "description": "Uncompressed audio format with highest quality",
+            "qualities": [
+                {"id": "low", "name": "Low (16-bit)", "description": "16-bit PCM"},
+                {"id": "medium", "name": "Medium (24-bit)", "description": "24-bit PCM"},
+                {"id": "high", "name": "High (32-bit float)", "description": "32-bit floating point"}
+            ]
+        },
+        {
+            "id": "mp3",
+            "name": "MP3",
+            "description": "Compressed audio format with good compatibility",
+            "qualities": [
+                {"id": "low", "name": "Low (128kbps)", "description": "128kbps bitrate"},
+                {"id": "medium", "name": "Medium (192kbps)", "description": "192kbps bitrate"},
+                {"id": "high", "name": "High (320kbps)", "description": "320kbps bitrate"}
+            ]
+        },
+        {
+            "id": "flac",
+            "name": "FLAC",
+            "description": "Lossless compressed audio format",
+            "qualities": [
+                {"id": "medium", "name": "Standard", "description": "Standard compression level"},
+                {"id": "high", "name": "Best", "description": "Best compression level"}
+            ]
+        },
+        {
+            "id": "ogg",
+            "name": "OGG Vorbis",
+            "description": "Free and open-source compressed audio format",
+            "qualities": [
+                {"id": "low", "name": "Low (96kbps)", "description": "96kbps bitrate"},
+                {"id": "medium", "name": "Medium (160kbps)", "description": "160kbps bitrate"},
+                {"id": "high", "name": "High (256kbps)", "description": "256kbps bitrate"}
+            ]
+        },
+        {
+            "id": "aac",
+            "name": "AAC",
+            "description": "Advanced Audio Coding format used by Apple",
+            "qualities": [
+                {"id": "low", "name": "Low (128kbps)", "description": "128kbps bitrate"},
+                {"id": "medium", "name": "Medium (192kbps)", "description": "192kbps bitrate"},
+                {"id": "high", "name": "High (256kbps)", "description": "256kbps bitrate"}
+            ]
+        }
+    ]
+    
+    return formats

@@ -15,4 +15,10 @@ numpy
 scipy
 
 # For visualization
-matplotlib
+matplotlib# Auth
+entication
+PyJWT# Adv
+anced audio processing
+pedalboard
+pydub
+ffmpeg-python

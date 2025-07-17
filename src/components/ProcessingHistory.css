@@ -1,0 +1,95 @@
+.processing-history {
+  margin-top: 24px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #333;
+}
+
+.processing-history h4 {
+  margin: 0 0 12px 0;
+  color: #e2e8f0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-item {
+  background: #222;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-left: 3px solid #333;
+}
+
+.history-item:hover {
+  background: #2a2a2a;
+}
+
+.history-item.favorite {
+  border-left-color: #10a37f;
+}
+
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #888;
+}
+
+.favorite-toggle {
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.favorite-toggle:hover {
+  color: #10a37f;
+}
+
+.history-item.favorite .favorite-toggle {
+  color: #10a37f;
+}
+
+.instructions {
+  font-size: 13px;
+  color: #e2e8f0;
+  margin-bottom: 8px;
+}
+
+.steps {
+  font-size: 12px;
+  color: #aaaaaa;
+}
+
+/* Scrollbar styling */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+  background-color: #444;
+}

@@ -92,4 +92,94 @@
   justify-content: center;
   min-height: calc(100vh - 80px);
   padding: 2rem;
+}/* A
+uthentication welcome styles */
+.auth-welcome {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-welcome h2 {
+  color: #ffffff;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.auth-welcome p {
+  color: #aaaaaa;
+  font-size: 1.1rem;
+}/* Setu
+p Steps Styles */
+.setup-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin: 2rem 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.setup-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: #222222;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.setup-step.active {
+  border-color: #10a37f;
+  background-color: rgba(16, 163, 127, 0.1);
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #444444;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.setup-step.active .step-number {
+  background-color: #10a37f;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.step-content p {
+  color: #aaaaaa;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.setup-button {
+  background-color: #10a37f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.setup-button:hover {
+  background-color: #0d8c6d;
 }

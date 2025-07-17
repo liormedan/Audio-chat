@@ -1,9 +1,25 @@
 @echo off
-echo Activating virtual environment...
-call %~dp0env\Scripts\activate.bat
+echo Setting up AudioChat backend...
 
-echo Installing required packages...
-pip install -r %~dp0requirements.txt
+REM Create virtual environment if it doesn't exist
+if not exist env (
+    echo Creating virtual environment...
+    python -m venv env
+)
 
-echo Setup complete! You can now run the backend server with:
-echo python %~dp0main.py
+REM Activate virtual environment
+call env\Scripts\activate
+
+REM Install dependencies
+echo Installing dependencies...
+pip install -r requirements.txt
+
+REM Create .env file if it doesn't exist
+if not exist .env (
+    echo Creating .env file...
+    copy .env.example .env
+    echo Please edit the .env file with your configuration
+)
+
+echo Setup complete!
+echo To start the server, run: run.bat

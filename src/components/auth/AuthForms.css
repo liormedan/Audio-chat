@@ -10,7 +10,7 @@
 .auth-form h2 {
   color: #ffffff;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -71,6 +71,10 @@
   cursor: pointer;
   transition: background-color 0.2s;
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .auth-button.primary {
@@ -82,15 +86,46 @@
   background-color: #0d8c6d;
 }
 
+.auth-button.google {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #dddddd;
+}
+
+.auth-button.google:hover:not(:disabled) {
+  background-color: #f5f5f5;
+}
+
 .auth-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: #666666;
+  font-size: 0.9rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #444444;
+}
+
+.auth-divider span {
+  padding: 0 1rem;
 }
 
 .auth-switch {
   text-align: center;
   color: #aaaaaa;
   font-size: 0.9rem;
+  margin-top: 1rem;
 }
 
 .auth-link {
@@ -104,4 +139,9 @@
 
 .auth-link:hover {
   color: #0d8c6d;
+}
+
+.google-icon {
+  width: 18px;
+  height: 18px;
 }

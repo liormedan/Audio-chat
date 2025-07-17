@@ -5,7 +5,9 @@ import {
   createUserWithEmailAndPassword, 
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 
 class AuthService {
@@ -28,27 +30,45 @@ class AuthService {
   // Supabase auth listener
   initializeSupabaseAuthListener() {
     const supabase = databaseConfig.getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase) {
+      console.warn('Supabase client not initialized');
+      return;
+    }
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      this.currentUser = session?.user || null;
-      this.notifyAuthStateListeners(this.currentUser);
-    });
+    try {
+      supabase.auth.onAuthStateChange((event, session) => {
+        this.currentUser = session?.user || null;
+        this.notifyAuthStateListeners(this.currentUser);
+      });
+    } catch (error) {
+      console.error('Error initializing Supabase auth listener:', error);
+    }
   }
 
   // Firebase auth listener
   initializeFirebaseAuthListener() {
     const auth = databaseConfig.getFirebaseAuth();
-    if (!auth) return;
+    if (!auth) {
+      console.warn('Firebase auth not initialized');
+      return;
+    }
 
-    onAuthStateChanged(auth, (user) => {
-      this.currentUser = user;
-      this.notifyAuthStateListeners(user);
-    });
+    try {
+      onAuthStateChanged(auth, (user) => {
+        this.currentUser = user;
+        this.notifyAuthStateListeners(user);
+      });
+    } catch (error) {
+      console.error('Error initializing Firebase auth listener:', error);
+    }
   }
 
   // Sign up with email and password
   async signUp(email, password, displayName = '') {
+    if (!databaseConfig.isInitialized()) {
+      throw new Error('Please configure your database connection first');
+    }
+    
     const provider = databaseConfig.getProvider();
     
     try {
@@ -96,6 +116,10 @@ class AuthService {
 
   // Sign in with email and password
   async signIn(email, password) {
+    if (!databaseConfig.isInitialized()) {
+      throw new Error('Please configure your database connection first');
+    }
+    
     const provider = databaseConfig.getProvider();
     
     try {
@@ -126,6 +150,57 @@ class AuthService {
   async firebaseSignIn(email, password) {
     const auth = databaseConfig.getFirebaseAuth();
     return await signInWithEmailAndPassword(auth, email, password);
+  }
+
+  // Sign in with Google
+  async signInWithGoogle() {
+    if (!databaseConfig.isInitialized()) {
+      throw new Error('Please configure your database connection first');
+    }
+    
+    const provider = databaseConfig.getProvider();
+    
+    try {
+      if (provider === DB_PROVIDERS.SUPABASE) {
+        return await this.supabaseSignInWithGoogle();
+      } else if (provider === DB_PROVIDERS.FIREBASE) {
+        return await this.firebaseSignInWithGoogle();
+      }
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      throw error;
+    }
+  }
+
+  // Supabase Google sign in
+  async supabaseSignInWithGoogle() {
+    const supabase = databaseConfig.getSupabaseClient();
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+
+      if (error) {
+        if (error.message.includes("provider is not enabled")) {
+          throw new Error("Google authentication is not enabled in your Supabase project. Please enable it in the Supabase dashboard under Authentication > Providers > Google.");
+        }
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      throw error;
+    }
+  }
+
+  // Firebase Google sign in
+  async firebaseSignInWithGoogle() {
+    const auth = databaseConfig.getFirebaseAuth();
+    const provider = new GoogleAuthProvider();
+    return await signInWithPopup(auth, provider);
   }
 
   // Sign out
