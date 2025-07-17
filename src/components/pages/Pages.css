@@ -519,4 +519,82 @@
   margin-top: 2rem;
   color: #666666;
   font-size: 0.8rem;
+}/* Databas
+e Configuration Page Styles */
+.provider-selection {
+  margin: 1rem 0;
+}
+
+.provider-description {
+  display: block;
+  font-size: 0.8rem;
+  color: #666666;
+  margin-top: 0.25rem;
+}
+
+.config-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #222222;
+  border: 1px solid #444444;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.config-input:focus {
+  outline: none;
+  border-color: #10a37f;
+}
+
+.config-input::placeholder {
+  color: #666666;
+}
+
+.config-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.connection-status {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+.connection-status.success {
+  background-color: rgba(16, 163, 127, 0.1);
+  color: #10a37f;
+  border: 1px solid rgba(16, 163, 127, 0.3);
+}
+
+.connection-status.error {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.status-indicator {
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.status-indicator.success {
+  background-color: rgba(16, 163, 127, 0.1);
+  color: #10a37f;
+  border: 1px solid rgba(16, 163, 127, 0.3);
+}
+
+.radio-option label {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.radio-option label strong {
+  color: #ffffff;
+  margin-bottom: 0.25rem;
 }

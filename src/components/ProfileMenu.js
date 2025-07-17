@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ProfileMenu.css';
 
-function ProfileMenu({ onOpenPage = () => {} }) {
+function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -68,6 +68,16 @@ function ProfileMenu({ onOpenPage = () => {} }) {
             <button 
               className="menu-item"
               onClick={() => {
+                onOpenPage('database');
+                setIsOpen(false);
+              }}
+            >
+              <span className="menu-icon">🗄️</span>
+              Database
+            </button>
+            <button 
+              className="menu-item"
+              onClick={() => {
                 onOpenPage('api-keys');
                 setIsOpen(false);
               }}
@@ -88,7 +98,13 @@ function ProfileMenu({ onOpenPage = () => {} }) {
           </div>
           
           <div className="menu-footer">
-            <button className="menu-item logout">
+            <button 
+              className="menu-item logout"
+              onClick={() => {
+                onLogout();
+                setIsOpen(false);
+              }}
+            >
               <span className="menu-icon">🚪</span>
               Log out
             </button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AppearancePage from './AppearancePage';
 import ApiKeysPage from './ApiKeysPage';
 import HelpFaqPage from './HelpFaqPage';
+import DatabaseConfigPage from './DatabaseConfigPage';
 import './Pages.css';
 
 function SettingsPage({ onClose, initialTab = 'appearance' }) {
@@ -13,6 +14,8 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
         return <AppearancePage />;
       case 'apiKeys':
         return <ApiKeysPage />;
+      case 'database':
+        return <DatabaseConfigPage />;
       case 'helpFaq':
         return <HelpFaqPage />;
       default:
@@ -34,6 +37,13 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
               Appearance
             </button>
             <button 
+              className={`settings-nav-item ${activePage === 'database' ? 'active' : ''}`}
+              onClick={() => setActivePage('database')}
+            >
+              <span className="settings-nav-icon">🗄️</span>
+              Database
+            </button>
+            <button 
               className={`settings-nav-item ${activePage === 'apiKeys' ? 'active' : ''}`}
               onClick={() => setActivePage('apiKeys')}
             >
@@ -53,6 +63,7 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
           <div className="settings-header">
             <h3>
               {activePage === 'appearance' && 'Appearance'}
+              {activePage === 'database' && 'Database Configuration'}
               {activePage === 'apiKeys' && 'API Keys'}
               {activePage === 'helpFaq' && 'Help & FAQ'}
             </h3>
