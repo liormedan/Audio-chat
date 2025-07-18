@@ -12,6 +12,29 @@ export function AuthProvider({ children }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    // Check for direct access user in localStorage
+    const directAccessUser = localStorage.getItem('directAccessUser');
+    if (directAccessUser) {
+      try {
+        const parsedUser = JSON.parse(directAccessUser);
+        setUser(parsedUser);
+        setIsLoading(false);
+        setIsInitialized(true);
+        return; // Skip normal authentication flow
+      } catch (error) {
+        console.error('Error parsing direct access user:', error);
+        // Continue with normal authentication flow
+      }
+    }
+    
+    // Check for authenticated flag in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const authenticated = urlParams.get('authenticated');
+    if (authenticated === 'true' && directAccessUser) {
+      // Already handled above
+      return;
+    }
+    
     // Always set loading to false initially to show auth forms
     setIsLoading(false);
     

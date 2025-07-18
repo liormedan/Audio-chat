@@ -921,8 +921,9 @@ async def get_audio_waveform(file_id: str, points: int = 1000, current_user: dic
         raise
     except Exception as e:
         logger.error(f"Error generating waveform: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))@ap
-p.post("/api/audio/export")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/audio/export")
 async def export_audio(
     file_id: str = Form(...),
     format: str = Form(...),

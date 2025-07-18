@@ -18,3 +18,9 @@ __pycache__/
 # מערכת
 .DS_Store
 Thumbs.db
+
+# Secrets and credentials
+secrets/
+*.pem
+*.key
+/secrets/

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatInterface from './components/ChatInterface';
 import LLMSelector from './components/LLMSelector';
 import ChatSidebar from './components/ChatSidebar';
@@ -6,10 +6,10 @@ import ProfileMenu from './components/ProfileMenu';
 import SettingsPage from './components/pages/SettingsPage';
 import LoginForm from './components/auth/LoginForm';
 import SignupForm from './components/auth/SignupForm';
+import DirectLogin from './components/auth/DirectLogin';
 import ExtensionsManager from './components/ExtensionsManager';
 import { SettingsProvider } from './context/SettingsContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import databaseConfig from './config/database';
 import './App.css';
 
 const AVAILABLE_LLMS = [
@@ -28,6 +28,16 @@ function AppContent() {
   const [activePage, setActivePage] = useState(null);
   const [settingsTab, setSettingsTab] = useState('appearance');
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+  const [isDirectAccess, setIsDirectAccess] = useState(false);
+  
+  // Check if this is a direct access request
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const directParam = urlParams.get('direct');
+    if (directParam === 'true') {
+      setIsDirectAccess(true);
+    }
+  }, []);
 
   const handleSelectChat = (chat) => {
     setActiveChat(chat);
@@ -139,7 +149,9 @@ function AppContent() {
               <h2>Welcome to AudioChat</h2>
               <p>Your AI-powered audio engineering assistant</p>
             </div>
-            {authMode === 'login' ? (
+            {isDirectAccess ? (
+              <DirectLogin />
+            ) : authMode === 'login' ? (
               <LoginForm 
                 onSuccess={() => {}}
                 onSwitchToSignup={() => setAuthMode('signup')}
