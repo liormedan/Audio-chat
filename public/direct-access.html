@@ -76,13 +76,16 @@
     
     // Store the mock user in localStorage
     localStorage.setItem('directAccessUser', JSON.stringify(mockUser));
-    
+
     // Set the database provider to Firebase
     localStorage.setItem('db_provider', 'firebase');
-    
-    // Redirect to the main app with authenticated flag
+
+    // Open the chats page directly when the app loads
+    localStorage.setItem('defaultPage', 'chats');
+
+    // Redirect to the main app with authentication parameters
     window.onload = function() {
-      window.location.href = '/?authenticated=true';
+      window.location.href = '/?authenticated=true&direct=true&page=chats';
     };
   </script>
 </body>
