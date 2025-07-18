@@ -137,6 +137,7 @@ function UserFiles({ onFileSelect }) {
                   onClick={() => handleDeleteFile(file.file_id)}
                   className="delete-button"
                   title="Delete file"
+                  aria-label="Delete file"
                 >
                   🗑️
                 </button>

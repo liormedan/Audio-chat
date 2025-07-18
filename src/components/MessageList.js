@@ -46,15 +46,16 @@ function MessageList({ messages, isLoading }) {
           <div className="message-bubble">
             <div className="message-content">
               {message.content}
-              {message.audioUrl && (
-                <button 
+                {message.audioUrl && (
+                <button
                   className={`audio-play-button ${playingAudio === message.id ? 'playing' : ''}`}
                   onClick={() => handlePlayAudio(message.audioUrl, message.id)}
                   title={playingAudio === message.id ? "Stop audio" : "Play audio"}
+                  aria-label={playingAudio === message.id ? 'Stop audio' : 'Play audio'}
                 >
                   {playingAudio === message.id ? '■' : '▶'}
                 </button>
-              )}
+                )}
             </div>
             <div className="message-meta">
               {message.model && `${message.model} • `}
