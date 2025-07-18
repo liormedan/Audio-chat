@@ -144,3 +144,18 @@
     opacity: 1;
   }
 }
+
+.copy-button {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 0.75rem;
+  padding: 0 4px;
+  transition: color 0.2s;
+}
+
+.copy-button:hover {
+  color: var(--foreground);
+}
