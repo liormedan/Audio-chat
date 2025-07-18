@@ -4,6 +4,7 @@ import ApiKeysPage from './ApiKeysPage';
 import HelpFaqPage from './HelpFaqPage';
 import DatabaseConfigPage from './DatabaseConfigPage';
 import './Pages.css';
+import { FaSlidersH, FaDatabase, FaKey, FaQuestionCircle } from 'react-icons/fa';
 
 function SettingsPage({ onClose, initialTab = 'appearance' }) {
   const [activePage, setActivePage] = useState(initialTab);
@@ -33,28 +34,28 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
               className={`settings-nav-item ${activePage === 'appearance' ? 'active' : ''}`}
               onClick={() => setActivePage('appearance')}
             >
-              <span className="settings-nav-icon">🎨</span>
+              <FaSlidersH aria-label="Appearance" className="settings-nav-icon" />
               Appearance
             </button>
             <button 
               className={`settings-nav-item ${activePage === 'database' ? 'active' : ''}`}
               onClick={() => setActivePage('database')}
             >
-              <span className="settings-nav-icon">🗄️</span>
+              <FaDatabase aria-label="Database" className="settings-nav-icon" />
               Database
             </button>
             <button 
               className={`settings-nav-item ${activePage === 'apiKeys' ? 'active' : ''}`}
               onClick={() => setActivePage('apiKeys')}
             >
-              <span className="settings-nav-icon">🔑</span>
+              <FaKey aria-label="API Keys" className="settings-nav-icon" />
               API Keys
             </button>
             <button 
               className={`settings-nav-item ${activePage === 'helpFaq' ? 'active' : ''}`}
               onClick={() => setActivePage('helpFaq')}
             >
-              <span className="settings-nav-icon">❓</span>
+              <FaQuestionCircle aria-label="Help" className="settings-nav-icon" />
               Help & FAQ
             </button>
           </nav>

@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ProfileMenu.css';
+import {
+  FaCog,
+  FaSlidersH,
+  FaDatabase,
+  FaKey,
+  FaPuzzlePiece,
+  FaQuestionCircle,
+  FaSignOutAlt,
+} from 'react-icons/fa';
 
 function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,7 +61,7 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
                 setIsOpen(false);
               }}
             >
-              <span className="menu-icon">⚙️</span>
+              <FaCog aria-label="Settings" className="menu-icon" />
               Settings
             </button>
             <button 
@@ -62,7 +71,7 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
                 setIsOpen(false);
               }}
             >
-              <span className="menu-icon">🎨</span>
+              <FaSlidersH aria-label="Appearance" className="menu-icon" />
               Appearance
             </button>
             <button 
@@ -72,7 +81,7 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
                 setIsOpen(false);
               }}
             >
-              <span className="menu-icon">🗄️</span>
+              <FaDatabase aria-label="Database" className="menu-icon" />
               Database
             </button>
             <button 
@@ -82,7 +91,7 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
                 setIsOpen(false);
               }}
             >
-              <span className="menu-icon">🔑</span>
+              <FaKey aria-label="API Keys" className="menu-icon" />
               API Keys
             </button>
             <button 
@@ -92,7 +101,7 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
                 setIsOpen(false);
               }}
             >
-              <span className="menu-icon">🧩</span>
+              <FaPuzzlePiece aria-label="Extensions" className="menu-icon" />
               Extensions
             </button>
             <button 
@@ -102,7 +111,7 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
                 setIsOpen(false);
               }}
             >
-              <span className="menu-icon">❓</span>
+              <FaQuestionCircle aria-label="Help" className="menu-icon" />
               Help & FAQ
             </button>
           </div>
@@ -115,7 +124,7 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
                 setIsOpen(false);
               }}
             >
-              <span className="menu-icon">🚪</span>
+              <FaSignOutAlt aria-label="Log out" className="menu-icon" />
               Log out
             </button>
           </div>

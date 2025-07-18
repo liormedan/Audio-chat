@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import uploadService from '../services/upload';
 import './FileUpload.css';
+import { FaMusic } from 'react-icons/fa';
 
 function FileUpload({ onUploadComplete, onUploadError }) {
   const { isAuthenticated } = useAuth();
@@ -113,7 +114,9 @@ function FileUpload({ onUploadComplete, onUploadError }) {
           </div>
         ) : (
           <div className="upload-prompt">
-            <div className="upload-icon">🎵</div>
+            <div className="upload-icon">
+              <FaMusic aria-label="Upload" />
+            </div>
             <h3>Upload Audio File</h3>
             <p>Drag and drop your audio file here, or click to browse</p>
             <p className="file-info">Supported formats: WAV, MP3, OGG, FLAC, AAC, M4A (max 50MB)</p>

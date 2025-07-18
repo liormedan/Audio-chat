@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import uploadService from '../services/upload';
 import './UserFiles.css';
+import { FaFolder, FaMusic } from 'react-icons/fa';
 
 function UserFiles({ onFileSelect }) {
   const { isAuthenticated } = useAuth();
@@ -109,11 +110,11 @@ function UserFiles({ onFileSelect }) {
                     ⏱️ {formatDuration(file.duration)}
                   </span>
                   <span className="file-size">
-                    📁 {formatFileSize(file.size)}
+                    <FaFolder aria-label="File size" /> {formatFileSize(file.size)}
                   </span>
                   {file.sample_rate && (
                     <span className="file-sample-rate">
-                      🎵 {file.sample_rate} Hz
+                      <FaMusic aria-label="Sample rate" /> {file.sample_rate} Hz
                     </span>
                   )}
                 </div>

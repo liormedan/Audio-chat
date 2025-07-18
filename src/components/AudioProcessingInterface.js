@@ -8,6 +8,7 @@ import ParameterAdjuster from './ParameterAdjuster';
 import AudioEditor from './AudioEditor';
 import SpectrumAnalyzer from './SpectrumAnalyzer';
 import AudioExport from './AudioExport';
+import { FaTimesCircle } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import uploadService from '../services/upload';
 import { getAudioWaveform } from '../services/authenticatedApi';
@@ -124,7 +125,9 @@ function AudioProcessingInterface() {
     <div className="audio-processing-interface">
       {uploadError && (
         <div className="error-message">
-          <p>❌ {uploadError}</p>
+          <p>
+            <FaTimesCircle aria-label="Error" /> {uploadError}
+          </p>
           <button onClick={() => setUploadError(null)}>Dismiss</button>
         </div>
       )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import databaseConfig, { DB_PROVIDERS } from '../../config/database';
 import './Pages.css';
+import { FaCheckCircle } from 'react-icons/fa';
 
 function DatabaseConfigPage() {
   const [selectedProvider, setSelectedProvider] = useState(databaseConfig.getProvider());
@@ -324,7 +325,7 @@ function DatabaseConfigPage() {
         <div className="settings-section">
           <h4>Connection Status</h4>
           <div className="status-indicator success">
-            ✅ Connected to {selectedProvider === DB_PROVIDERS.SUPABASE ? 'Supabase' : 'Firebase'}
+            <FaCheckCircle aria-label="Connected" /> Connected to {selectedProvider === DB_PROVIDERS.SUPABASE ? 'Supabase' : 'Firebase'}
           </div>
         </div>
       )}
