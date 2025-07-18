@@ -1,167 +1,214 @@
 .audio-export {
-  background: #1a1a1a;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 20px;
-  border: 1px solid #333;
+  background-color: hsl(var(--card));
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.audio-export h3 {
-  margin: 0 0 16px 0;
-  color: #e2e8f0;
-  font-size: 18px;
-  font-weight: 600;
+.export-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.segment-info {
-  background: #222;
-  border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 16px;
-}
-
-.segment-info p {
+.export-header h3 {
   margin: 0;
-  color: #aaaaaa;
-  font-size: 14px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
 .export-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .export-option {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 150px;
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid hsl(var(--border));
 }
 
-.export-option label {
-  color: #aaaaaa;
-  font-size: 14px;
+.export-option:hover {
+  background-color: hsl(var(--accent));
 }
 
-.export-option select {
-  background: #333;
-  color: #e2e8f0;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 14px;
-  width: 100%;
+.export-option.selected {
+  background-color: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary));
 }
 
-.export-description {
-  flex: 1;
-  min-width: 200px;
+.export-option h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
-.export-description p {
+.export-option p {
   margin: 0;
-  color: #aaaaaa;
-  font-size: 12px;
-  font-style: italic;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.quality-options {
+  margin-top: 1.5rem;
+}
+
+.quality-options h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.quality-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.quality-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quality-button:hover {
+  background-color: hsl(var(--accent));
+}
+
+.quality-button.selected {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
 }
 
 .export-actions {
-  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
 }
 
 .export-button {
-  background: #10a37f;
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   border: none;
-  border-radius: 4px;
-  padding: 10px 16px;
-  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.export-button:hover:not(:disabled) {
-  background: #0d8c6d;
+.export-button:hover {
+  background-color: hsl(var(--primary) / 0.9);
 }
 
 .export-button:disabled {
-  background: #333;
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-.export-error {
-  background: #742a2a;
-  color: #fed7d7;
-  border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 16px;
+.export-progress {
+  margin-top: 1.5rem;
 }
 
-.export-error p {
-  margin: 0;
-  font-size: 14px;
+.progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: hsl(var(--secondary));
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
 }
 
-.export-result {
-  background: #2a4a38;
-  border-radius: 6px;
-  padding: 16px;
+.progress-fill {
+  height: 100%;
+  background-color: hsl(var(--primary));
+  border-radius: 9999px;
+  transition: width 0.3s ease;
 }
 
-.export-result h4 {
-  margin: 0 0 12px 0;
-  color: #e2e8f0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.result-details {
-  margin-bottom: 16px;
-}
-
-.result-details p {
-  margin: 4px 0;
-  color: #aaaaaa;
-  font-size: 14px;
-}
-
-.download-section {
+.progress-text {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
   text-align: center;
 }
 
-.download-button {
-  display: inline-block;
-  background: #10a37f;
-  color: white;
+.export-result {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+}
+
+.export-result h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: hsl(var(--primary));
+  font-size: 0.875rem;
   text-decoration: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-.download-button:hover {
-  background: #0d8c6d;
+.download-link:hover {
+  color: hsl(var(--primary) / 0.8);
+  text-decoration: underline;
 }
 
-/* Mobile responsive styles */
+.file-info {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .export-options {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   
-  .export-option {
-    width: 100%;
+  .quality-selector {
+    flex-wrap: wrap;
   }
   
-  .export-description {
-    margin-top: 8px;
-  }
-  
-  .export-button {
-    width: 100%;
+  .quality-button {
+    flex: 1;
+    min-width: 80px;
   }
 }

@@ -1,39 +1,61 @@
 .extensions-manager {
-  padding: 20px;
+  padding: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  background-color: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.extensions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.extensions-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--card-foreground);
 }
 
 .extensions-description {
-  margin-bottom: 24px;
-  color: #666;
+  margin-bottom: 1.5rem;
+  color: var(--muted-foreground);
   line-height: 1.5;
 }
 
 .extensions-category {
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
 }
 
 .extensions-category h3 {
-  margin-bottom: 15px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
-  color: #333;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--card-foreground);
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .extensions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  gap: 1.5rem;
 }
 
 .extension-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  background-color: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
 }
@@ -45,7 +67,7 @@
 
 .extension-card.enabled {
   border-color: #4CAF50;
-  background-color: #f9fff9;
+  background-color: rgba(76, 175, 80, 0.1);
 }
 
 .extension-card.premium {
@@ -56,30 +78,31 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 0.75rem;
 }
 
 .extension-header h4 {
   margin: 0;
-  font-size: 18px;
-  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-foreground);
 }
 
 .premium-badge {
   background-color: #FFD700;
-  color: #333;
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-weight: bold;
+  color: #000000;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
 }
 
 .extension-description {
-  color: #666;
-  font-size: 14px;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
   line-height: 1.5;
-  margin-bottom: 16px;
-  min-height: 60px;
+  margin-bottom: 1rem;
+  min-height: 3.75rem;
 }
 
 .extension-footer {
@@ -89,27 +112,35 @@
 }
 
 .extension-version {
-  font-size: 12px;
-  color: #999;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
 }
 
 .toggle-button {
-  background-color: #f0f0f0;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
   font-weight: 500;
-  transition: all 0.2s ease;
+  height: 2rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .toggle-button:hover {
-  background-color: #e0e0e0;
+  background-color: var(--secondary);
+  opacity: 0.8;
 }
 
 .toggle-button.enabled {
   background-color: #4CAF50;
-  color: white;
+  color: #ffffff;
 }
 
 .toggle-button.enabled:hover {
@@ -132,23 +163,29 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
-  border-radius: 8px;
+  color: #ffffff;
+  border-radius: var(--radius);
 }
 
 .premium-overlay p {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 .upgrade-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   background-color: #FFD700;
-  color: #333;
+  color: #000000;
   border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -159,27 +196,29 @@
 }
 
 .extensions-loading {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--muted-foreground);
+  font-size: 1rem;
 }
 
 .extensions-error {
-  text-align: center;
-  padding: 40px;
-  color: #d32f2f;
-  font-size: 18px;
-  background-color: #ffebee;
-  border-radius: 8px;
-  margin: 20px 0;
+  padding: 1.5rem;
+  color: var(--destructive);
+  font-size: 1rem;
+  background-color: rgba(255, 0, 0, 0.1);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  margin: 1.5rem 0;
 }
 
 .no-extensions {
   text-align: center;
-  padding: 40px;
-  color: #666;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  margin: 20px 0;
+  padding: 3rem;
+  color: var(--muted-foreground);
+  background-color: var(--secondary);
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
 }

@@ -94,7 +94,9 @@ const ExtensionsManager = () => {
 
   return (
     <div className="extensions-manager">
-      <h2>Audio Processing Extensions</h2>
+      <div className="extensions-header">
+        <h2>Audio Processing Extensions</h2>
+      </div>
       <p className="extensions-description">
         Enable or disable extensions to enhance your audio processing capabilities.
         Premium extensions provide advanced features for professional audio work.

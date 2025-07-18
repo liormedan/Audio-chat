@@ -1,3 +1,133 @@
+/* Base theme variables */
+:root {
+  /* Light theme colors */
+  --background-light: #ffffff;
+  --foreground-light: #333333;
+  --card-light: #ffffff;
+  --card-foreground-light: #333333;
+  --popover-light: #ffffff;
+  --popover-foreground-light: #333333;
+  --primary-light: #4a90e2;
+  --primary-foreground-light: #ffffff;
+  --secondary-light: #f0f0f0;
+  --secondary-foreground-light: #333333;
+  --muted-light: #f0f0f0;
+  --muted-foreground-light: #666666;
+  --accent-light: #e9f0f9;
+  --accent-foreground-light: #333333;
+  --destructive-light: #ff0000;
+  --destructive-foreground-light: #ffffff;
+  --border-light: #e0e0e0;
+  --input-light: #cccccc;
+  --ring-light: #4a90e2;
+  
+  /* Dark theme colors */
+  --background-dark: #121212;
+  --foreground-dark: #e0e0e0;
+  --card-dark: #1e1e1e;
+  --card-foreground-dark: #e0e0e0;
+  --popover-dark: #1e1e1e;
+  --popover-foreground-dark: #e0e0e0;
+  --primary-dark: #4a90e2;
+  --primary-foreground-dark: #ffffff;
+  --secondary-dark: #2a2a2a;
+  --secondary-foreground-dark: #e0e0e0;
+  --muted-dark: #2a2a2a;
+  --muted-foreground-dark: #999999;
+  --accent-dark: #2c3e50;
+  --accent-foreground-dark: #e0e0e0;
+  --destructive-dark: #ff4d4d;
+  --destructive-foreground-dark: #ffffff;
+  --border-dark: #333333;
+  --input-dark: #333333;
+  --ring-dark: #4a90e2;
+  
+  /* Shared variables */
+  --radius: 0.5rem;
+  
+  /* Default to dark theme */
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+  --card: var(--card-dark);
+  --card-foreground: var(--card-foreground-dark);
+  --popover: var(--popover-dark);
+  --popover-foreground: var(--popover-foreground-dark);
+  --primary: var(--primary-dark);
+  --primary-foreground: var(--primary-foreground-dark);
+  --secondary: var(--secondary-dark);
+  --secondary-foreground: var(--secondary-foreground-dark);
+  --muted: var(--muted-dark);
+  --muted-foreground: var(--muted-foreground-dark);
+  --accent: var(--accent-dark);
+  --accent-foreground: var(--accent-foreground-dark);
+  --destructive: var(--destructive-dark);
+  --destructive-foreground: var(--destructive-foreground-dark);
+  --border: var(--border-dark);
+  --input: var(--input-dark);
+  --ring: var(--ring-dark);
+}
+
+/* Light theme class */
+.light {
+  --background: var(--background-light);
+  --foreground: var(--foreground-light);
+  --card: var(--card-light);
+  --card-foreground: var(--card-foreground-light);
+  --popover: var(--popover-light);
+  --popover-foreground: var(--popover-foreground-light);
+  --primary: var(--primary-light);
+  --primary-foreground: var(--primary-foreground-light);
+  --secondary: var(--secondary-light);
+  --secondary-foreground: var(--secondary-foreground-light);
+  --muted: var(--muted-light);
+  --muted-foreground: var(--muted-foreground-light);
+  --accent: var(--accent-light);
+  --accent-foreground: var(--accent-foreground-light);
+  --destructive: var(--destructive-light);
+  --destructive-foreground: var(--destructive-foreground-light);
+  --border: var(--border-light);
+  --input: var(--input-light);
+  --ring: var(--ring-light);
+}
+
+/* Dark theme class - this is redundant but included for clarity */
+.dark {
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+  --card: var(--card-dark);
+  --card-foreground: var(--card-foreground-dark);
+  --popover: var(--popover-dark);
+  --popover-foreground: var(--popover-foreground-dark);
+  --primary: var(--primary-dark);
+  --primary-foreground: var(--primary-foreground-dark);
+  --secondary: var(--secondary-dark);
+  --secondary-foreground: var(--secondary-foreground-dark);
+  --muted: var(--muted-dark);
+  --muted-foreground: var(--muted-foreground-dark);
+  --accent: var(--accent-dark);
+  --accent-foreground: var(--accent-foreground-dark);
+  --destructive: var(--destructive-dark);
+  --destructive-foreground: var(--destructive-foreground-dark);
+  --border: var(--border-dark);
+  --input: var(--input-dark);
+  --ring: var(--ring-dark);
+}
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .app {
   height: 100vh;
   display: flex;
@@ -5,13 +135,13 @@
 }
 
 .app-header {
-  background: #222222;
+  background-color: var(--card);
   padding: 1rem 2rem;
-  border-bottom: 1px solid #444444;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .header-controls {
@@ -21,7 +151,7 @@
 }
 
 .app-header h1 {
-  color: #ffffff;
+  color: var(--card-foreground);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -30,28 +160,30 @@
   display: flex;
   flex: 1;
   overflow: hidden;
+  background-color: var(--background);
 }
 
 .app-main {
   flex: 1;
   overflow: hidden;
-}/*
- Loading and Setup Styles */
+}
+
+/* Loading and Setup Styles */
 .app-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #333333;
-  color: #ffffff;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #444444;
-  border-top: 4px solid #10a37f;
+  border: 4px solid var(--muted);
+  border-top: 4px solid var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -64,7 +196,7 @@
 
 .app-loading p {
   font-size: 1.1rem;
-  color: #aaaaaa;
+  color: var(--muted-foreground);
 }
 
 .setup-container {
@@ -75,13 +207,13 @@
 }
 
 .setup-container h2 {
-  color: #ffffff;
+  color: var(--foreground);
   font-size: 2rem;
   margin-bottom: 1rem;
 }
 
 .setup-container p {
-  color: #aaaaaa;
+  color: var(--muted-foreground);
   font-size: 1.1rem;
   margin-bottom: 2rem;
 }
@@ -92,24 +224,26 @@
   justify-content: center;
   min-height: calc(100vh - 80px);
   padding: 2rem;
-}/* A
-uthentication welcome styles */
+}
+
+/* Authentication welcome styles */
 .auth-welcome {
   text-align: center;
   margin-bottom: 2rem;
 }
 
 .auth-welcome h2 {
-  color: #ffffff;
+  color: var(--foreground);
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
 
 .auth-welcome p {
-  color: #aaaaaa;
+  color: var(--muted-foreground);
   font-size: 1.1rem;
-}/* Setu
-p Steps Styles */
+}
+
+/* Setup Steps Styles */
 .setup-steps {
   display: flex;
   flex-direction: column;
@@ -125,23 +259,23 @@ p Steps Styles */
   align-items: flex-start;
   gap: 1rem;
   padding: 1.5rem;
-  background-color: #222222;
-  border-radius: 12px;
-  border: 2px solid transparent;
+  background-color: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
   transition: all 0.3s ease;
 }
 
 .setup-step.active {
-  border-color: #10a37f;
-  background-color: rgba(16, 163, 127, 0.1);
+  border-color: var(--primary);
+  background-color: rgba(74, 144, 226, 0.1);
 }
 
 .step-number {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #444444;
-  color: #ffffff;
+  background-color: var(--muted);
+  color: var(--muted-foreground);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +284,8 @@ p Steps Styles */
 }
 
 .setup-step.active .step-number {
-  background-color: #10a37f;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .step-content {
@@ -158,22 +293,22 @@ p Steps Styles */
 }
 
 .step-content h3 {
-  color: #ffffff;
+  color: var(--foreground);
   margin: 0 0 0.5rem 0;
   font-size: 1.2rem;
 }
 
 .step-content p {
-  color: #aaaaaa;
+  color: var(--muted-foreground);
   margin: 0 0 1rem 0;
   line-height: 1.5;
 }
 
 .setup-button {
-  background-color: #10a37f;
-  color: white;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius);
   padding: 0.75rem 1.5rem;
   font-weight: 500;
   cursor: pointer;
@@ -181,5 +316,6 @@ p Steps Styles */
 }
 
 .setup-button:hover {
-  background-color: #0d8c6d;
+  background-color: var(--primary);
+  opacity: 0.9;
 }

@@ -10,7 +10,9 @@ import DirectLogin from './components/auth/DirectLogin';
 import ExtensionsManager from './components/ExtensionsManager';
 import { SettingsProvider } from './context/SettingsContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import './App.css';
+import './components/chat-container.css';
 
 const AVAILABLE_LLMS = [
   { id: 'openai', name: 'OpenAI GPT', endpoint: '/api/openai' },
@@ -24,7 +26,7 @@ function AppContent() {
   const { user, isLoading, isInitialized, signOut } = useAuth();
   const [selectedLLM, setSelectedLLM] = useState(AVAILABLE_LLMS[0]);
   const [messages, setMessages] = useState([]);
-  const [activeChat, setActiveChat] = useState({ id: 1, title: 'New Chat', model: 'OpenAI GPT', date: 'Today' });
+  const [activeChat, setActiveChat] = useState(null);
   const [activePage, setActivePage] = useState(null);
   const [settingsTab, setSettingsTab] = useState('appearance');
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
@@ -38,6 +40,60 @@ function AppContent() {
       setIsDirectAccess(true);
     }
   }, []);
+  
+  // Listen for navigation events from MainLayout
+  useEffect(() => {
+    const handleNavigation = (event) => {
+      // Only handle navigation if user is authenticated
+      if (!user) return;
+      
+      const { page } = event.detail;
+      
+      // Update active page based on navigation event
+      switch(page) {
+        case 'home':
+          setActivePage(null);
+          break;
+        case 'chats':
+          setActivePage('chats');
+          break;
+        case 'audio':
+          setActivePage('audio');
+          break;
+        case 'extensions':
+          setActivePage('extensions');
+          break;
+        case 'settings':
+          setActivePage('settings');
+          setSettingsTab('appearance');
+          break;
+        case 'help':
+          setActivePage('settings');
+          setSettingsTab('helpFaq');
+          break;
+        default:
+          setActivePage(null);
+      }
+    };
+    
+    // Add event listener for navigation changes
+    window.addEventListener('navigationChange', handleNavigation);
+    
+    // Check URL parameters for initial navigation
+    if (user) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pageParam = urlParams.get('page');
+      if (pageParam) {
+        // Simulate a navigation event
+        handleNavigation({ detail: { page: pageParam } });
+      }
+    }
+    
+    // Clean up event listener
+    return () => {
+      window.removeEventListener('navigationChange', handleNavigation);
+    };
+  }, [user, setActivePage, setSettingsTab]);
 
   const handleSelectChat = (chat) => {
     setActiveChat(chat);
@@ -167,68 +223,79 @@ function AppContent() {
       </div>
     );
   }
-
+  
   // At this point, user is authenticated and database is configured
+  
+  // Import the new components
+  const MainLayout = React.lazy(() => import('./components/MainLayout'));
+  const HomePage = React.lazy(() => import('./components/HomePage'));
 
   // Show main app interface for authenticated users
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>AudioChat</h1>
-        <div className="header-controls">
-          <LLMSelector 
-            llms={AVAILABLE_LLMS}
-            selected={selectedLLM}
-            onSelect={setSelectedLLM}
-          />
-          <ProfileMenu onOpenPage={handleOpenPage} onLogout={handleLogout} />
-        </div>
-      </header>
-      <div className="app-content">
-        <ChatSidebar 
-          onSelectChat={handleSelectChat}
-          activeChat={activeChat}
-        />
-        <main className="app-main">
-          {activePage === 'settings' ? (
-            <SettingsPage 
-              onClose={() => setActivePage(null)} 
-              initialTab={settingsTab}
-            />
-          ) : activePage === 'extensions' ? (
-            <div className="page-container">
-              <div className="page-header">
-                <button 
-                  className="back-button"
-                  onClick={() => setActivePage(null)}
-                >
-                  ← Back to Chat
-                </button>
-              </div>
-              <ExtensionsManager />
-            </div>
-          ) : (
-            <ChatInterface 
-              selectedLLM={selectedLLM}
-              messages={messages}
-              setMessages={setMessages}
-              activeChat={activeChat}
-            />
-          )}
-        </main>
+    <React.Suspense fallback={
+      <div className="app-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading interface...</p>
       </div>
-    </div>
+    }>
+      <MainLayout>
+        {activePage === 'settings' ? (
+          <SettingsPage 
+            onClose={() => setActivePage(null)} 
+            initialTab={settingsTab}
+          />
+        ) : activePage === 'extensions' ? (
+          <div className="page-container">
+            <div className="page-header">
+              <h2 className="page-title">Extensions Manager</h2>
+            </div>
+            <ExtensionsManager />
+          </div>
+        ) : activePage === 'chats' ? (
+          <div className="page-container">
+            <div className="page-header">
+              <h2 className="page-title">Chats</h2>
+            </div>
+            <div className="chat-container">
+              <ChatSidebar 
+                onSelectChat={handleSelectChat}
+                activeChat={activeChat}
+              />
+              <ChatInterface 
+                selectedLLM={selectedLLM}
+                messages={messages}
+                setMessages={setMessages}
+                activeChat={activeChat}
+              />
+            </div>
+          </div>
+        ) : activePage === 'audio' ? (
+          <div className="page-container">
+            <div className="page-header">
+              <h2 className="page-title">Audio Processing</h2>
+            </div>
+            <div className="audio-processing-placeholder">
+              <p>Audio processing interface would be displayed here.</p>
+            </div>
+          </div>
+        ) : (
+          <HomePage />
+        )}
+      </MainLayout>
+    </React.Suspense>
   );
 }
 
 // Main App component with providers
 function App() {
   return (
-    <AuthProvider>
-      <SettingsProvider>
-        <AppContent />
-      </SettingsProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <SettingsProvider>
+          <AppContent />
+        </SettingsProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

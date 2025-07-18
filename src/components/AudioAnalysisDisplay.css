@@ -1,39 +1,45 @@
 .audio-analysis-display {
-  background: #1a1a1a;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 20px;
-  border: 1px solid #333;
+  background-color: hsl(var(--card));
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .analysis-tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 0.25rem;
 }
 
 .tab-button {
-  background: #333;
-  color: #aaa;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
   border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s;
   white-space: nowrap;
 }
 
 .tab-button:hover {
-  background: #444;
-  color: #eee;
+  background-color: hsl(var(--secondary) / 0.8);
 }
 
 .tab-button.active {
-  background: #10a37f;
-  color: white;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 .analysis-content {
@@ -44,65 +50,65 @@
 .analysis-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .summary-item {
-  background: #222;
-  border-radius: 6px;
-  padding: 12px;
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
   text-align: center;
 }
 
 .summary-label {
-  color: #aaa;
-  font-size: 12px;
-  margin-bottom: 8px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .summary-value {
-  color: #e2e8f0;
-  font-size: 18px;
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
 .analysis-meters {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1rem;
 }
 
 .meter-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 1rem;
 }
 
 .meter-label {
-  color: #aaa;
-  font-size: 14px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
   width: 100px;
 }
 
 .meter-bar {
   flex: 1;
-  height: 8px;
-  background: #333;
-  border-radius: 4px;
+  height: 0.5rem;
+  background-color: hsl(var(--secondary));
+  border-radius: 9999px;
   overflow: hidden;
 }
 
 .meter-fill {
   height: 100%;
-  background: #3182ce;
-  border-radius: 4px;
+  background-color: hsl(var(--primary));
+  border-radius: 9999px;
   transition: width 0.3s ease;
 }
 
 .meter-value {
-  color: #e2e8f0;
-  font-size: 14px;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
   width: 60px;
   text-align: right;
 }
@@ -111,31 +117,31 @@
 .analysis-spectral {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .spectral-item {
-  background: #222;
-  border-radius: 6px;
-  padding: 12px;
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
 }
 
 .spectral-label {
-  color: #aaa;
-  font-size: 14px;
-  margin-bottom: 4px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
 }
 
 .spectral-value {
-  color: #e2e8f0;
-  font-size: 18px;
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 }
 
 .spectral-description {
-  color: #666;
-  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
   font-style: italic;
 }
 
@@ -143,31 +149,31 @@
 .analysis-dynamics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 1rem;
 }
 
 .dynamics-item {
-  background: #222;
-  border-radius: 6px;
-  padding: 12px;
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
 }
 
 .dynamics-label {
-  color: #aaa;
-  font-size: 14px;
-  margin-bottom: 4px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
 }
 
 .dynamics-value {
-  color: #e2e8f0;
-  font-size: 18px;
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 }
 
 .dynamics-description {
-  color: #666;
-  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
   font-style: italic;
 }
 
@@ -175,31 +181,31 @@
 .analysis-musical {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 1rem;
 }
 
 .musical-item {
-  background: #222;
-  border-radius: 6px;
-  padding: 12px;
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
 }
 
 .musical-label {
-  color: #aaa;
-  font-size: 14px;
-  margin-bottom: 4px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
 }
 
 .musical-value {
-  color: #e2e8f0;
-  font-size: 18px;
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 }
 
 .musical-description {
-  color: #666;
-  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
   font-style: italic;
 }
 
@@ -214,7 +220,7 @@
   .meter-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 0.5rem;
   }
   
   .meter-label {
