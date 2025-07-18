@@ -6,6 +6,7 @@ import ProfileMenu from './components/ProfileMenu';
 import SettingsPage from './components/pages/SettingsPage';
 import LoginForm from './components/auth/LoginForm';
 import SignupForm from './components/auth/SignupForm';
+import ExtensionsManager from './components/ExtensionsManager';
 import { SettingsProvider } from './context/SettingsContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import databaseConfig from './config/database';
@@ -37,23 +38,27 @@ function AppContent() {
   };
   
   const handleOpenPage = (page) => {
-    setActivePage('settings');
-    
-    switch(page) {
-      case 'appearance':
-        setSettingsTab('appearance');
-        break;
-      case 'api-keys':
-        setSettingsTab('apiKeys');
-        break;
-      case 'database':
-        setSettingsTab('database');
-        break;
-      case 'help-faq':
-        setSettingsTab('helpFaq');
-        break;
-      default:
-        setSettingsTab('appearance');
+    if (page === 'extensions') {
+      setActivePage('extensions');
+    } else {
+      setActivePage('settings');
+      
+      switch(page) {
+        case 'appearance':
+          setSettingsTab('appearance');
+          break;
+        case 'api-keys':
+          setSettingsTab('apiKeys');
+          break;
+        case 'database':
+          setSettingsTab('database');
+          break;
+        case 'help-faq':
+          setSettingsTab('helpFaq');
+          break;
+        default:
+          setSettingsTab('appearance');
+      }
     }
   };
 
@@ -173,11 +178,23 @@ function AppContent() {
           activeChat={activeChat}
         />
         <main className="app-main">
-          {activePage ? (
+          {activePage === 'settings' ? (
             <SettingsPage 
               onClose={() => setActivePage(null)} 
               initialTab={settingsTab}
             />
+          ) : activePage === 'extensions' ? (
+            <div className="page-container">
+              <div className="page-header">
+                <button 
+                  className="back-button"
+                  onClick={() => setActivePage(null)}
+                >
+                  ← Back to Chat
+                </button>
+              </div>
+              <ExtensionsManager />
+            </div>
           ) : (
             <ChatInterface 
               selectedLLM={selectedLLM}

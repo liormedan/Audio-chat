@@ -88,6 +88,16 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
             <button 
               className="menu-item"
               onClick={() => {
+                onOpenPage('extensions');
+                setIsOpen(false);
+              }}
+            >
+              <span className="menu-icon">🧩</span>
+              Extensions
+            </button>
+            <button 
+              className="menu-item"
+              onClick={() => {
                 onOpenPage('help-faq');
                 setIsOpen(false);
               }}

@@ -1,3 +1,6 @@
+## enviroment
+uv
+#web 
 fastapi
 uvicorn
 python-multipart
@@ -15,13 +18,15 @@ numpy
 scipy
 
 # For visualization
-matplotlib# Auth
-entication
-PyJWT# Adv
-anced audio processing
+matplotlib
+
+# Authentication
+PyJWT
+
+# Advanced audio processing
 pedalboard
-pydub
-ffmpeg-python# Ad
-vanced audio processing
-spleeter
-tensorflow
+ffmpeg-python
+
+# Advanced audio processing
+# spleeter  # Commented out due to Python 3.13 compatibility issues
+# tensorflow  # Commented out due to Python 3.13 compatibility issues

@@ -1031,8 +1031,9 @@ async def get_supported_formats():
         }
     ]
     
-    return formats@
-app.post("/api/audio/separate")
+    return formats
+
+@app.post("/api/audio/separate")
 async def separate_audio_sources(
     file_id: str = Form(...),
     mode: str = Form("2stems"),
@@ -1352,8 +1353,9 @@ async def get_audio_capabilities():
         "caching": True
     }
     
-    return capabilities# 
-Extensions API routes
+    return capabilities
+
+# Extensions API routes
 @app.get("/api/extensions")
 async def get_extensions(current_user: dict = Depends(get_current_user)):
     """

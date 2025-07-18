@@ -1,0 +1,10 @@
+{
+  "id": "professional_eq",
+  "name": "Professional EQ Suite",
+  "description": "High-quality equalizers with multiple algorithms including analog-style EQ, digital precision EQ, and vintage character EQ",
+  "version": "1.0.0",
+  "category": "processing",
+  "premium": true,
+  "dependencies": ["numpy", "scipy"],
+  "module_path": "extensions.modules.professional_eq"
+}

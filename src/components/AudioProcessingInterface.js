@@ -161,6 +161,16 @@ function AudioProcessingInterface() {
                 >
                   {showExport ? 'Hide Export' : 'Export Options'}
                 </button>
+                <button 
+                  className="action-button"
+                  onClick={() => {
+                    // This would need to be passed down from App.js
+                    // For now, we'll show an alert
+                    alert('Extensions feature available in main menu. Click on your profile menu to access Extensions.');
+                  }}
+                >
+                  Extensions
+                </button>
               </div>
             </div>
             
