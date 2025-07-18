@@ -44,8 +44,8 @@ function MessageList({ messages, isLoading }) {
             {message.role === 'user' ? 'U' : 'AI'}
           </div>
           <div className="message-bubble">
-            <div className="message-content">
-              {message.content}
+          <div className="message-content">
+              <span className="message-text">{message.content}</span>
                 {message.audioUrl && (
                 <button
                   className={`audio-play-button ${playingAudio === message.id ? 'playing' : ''}`}
@@ -56,7 +56,15 @@ function MessageList({ messages, isLoading }) {
                   {playingAudio === message.id ? '■' : '▶'}
                 </button>
                 )}
-            </div>
+                <button
+                  className="copy-button"
+                  onClick={() => navigator.clipboard.writeText(message.content)}
+                  aria-label="Copy message"
+                  title="Copy message"
+                >
+                  Copy
+                </button>
+          </div>
             <div className="message-meta">
               {message.model && `${message.model} • `}
               {message.timestamp.toLocaleTimeString()}
