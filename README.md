@@ -52,7 +52,7 @@ AudioChat is an AI-powered audio engineering assistant that helps you edit, mix,
 - Node.js (v14 or later)
 - Python (v3.8 or later)
 - API keys for the LLM providers you want to use (OpenAI, Anthropic, Google)
-- Google OAuth credentials for authentication (see AUTH_SETUP.md)
+- Google OAuth credentials for authentication (see the [Authentication & Database Setup](#authentication--database-setup) section)
 
 ### Installation
 
@@ -204,6 +204,56 @@ API keys can also be managed through the application interface:
 2. Enter your API keys for each provider
 3. Click "Save Keys"
 
+## Authentication & Database Setup
+
+AudioChat supports both **Supabase** and **Firebase** for authentication and data storage. Choose one of the providers below and place the required keys in `backend/.env`.
+
+### Supabase
+1. Create an account at [Supabase](https://supabase.com) and start a new project.
+2. In the dashboard, navigate to **Authentication → Settings → Auth Providers**.
+3. Enable **Email/Password** and **Google** providers. For Google, create an OAuth application in the Google Cloud Console and add the redirect URI from Supabase.
+4. Copy the `SUPABASE_URL` and `SUPABASE_ANON_KEY` from **API** settings.
+5. Add them to `backend/.env`:
+   ```
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+### Firebase
+1. Visit [Firebase](https://firebase.google.com) and create a new project.
+2. Add a web app to the project and enable **Authentication** in the console.
+3. Turn on **Email/Password** and **Google** sign‑in methods.
+4. From **Project Settings → Your Apps → SDK setup and configuration**, copy your Firebase keys.
+5. Add them to `backend/.env`:
+   ```
+   FIREBASE_API_KEY=your_firebase_api_key
+   FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+   FIREBASE_PROJECT_ID=your_firebase_project_id
+   FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+   FIREBASE_MESSAGING_SENDER_ID=your_firebase_sender_id
+   FIREBASE_APP_ID=your_firebase_app_id
+   ```
+
+### Starting the Servers
+1. **Backend**
+   ```
+   cd backend
+   ./setup.sh      # use setup.bat on Windows
+   ./run.sh        # use run.bat on Windows
+   ```
+2. **Frontend** (in a separate terminal)
+   ```
+   npm install
+   npm start
+   ```
+
+### Running Tests
+* Backend tests: `cd backend && pytest`
+* Frontend tests: `npm test`
+
+Once both servers are running, open `http://localhost:3000` and sign in with Google or email. Authentication state persists across sessions.
+
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -223,4 +273,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - OpenAI for GPT models and Whisper API
 - Anthropic for Claude models
 - Google for Gemini models
-- The React and FastAPI communities for excellent documentation and tools#
+- The React and FastAPI communities for excellent documentation and tools
