@@ -8,38 +8,16 @@ const AuthContext = createContext();
 // Auth provider component
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Check for direct access user in localStorage
-    const directAccessUser = localStorage.getItem('directAccessUser');
-    if (directAccessUser) {
-      try {
-        const parsedUser = JSON.parse(directAccessUser);
-        setUser(parsedUser);
-        setIsLoading(false);
-        setIsInitialized(true);
-        return; // Skip normal authentication flow
-      } catch (error) {
-        console.error('Error parsing direct access user:', error);
-        // Continue with normal authentication flow
-      }
-    }
-    
-    // Check for authenticated flag in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const authenticated = urlParams.get('authenticated');
-    if (authenticated === 'true' && directAccessUser) {
-      // Already handled above
-      return;
-    }
-    
     // Always set loading to false initially to show auth forms
     setIsLoading(false);
     
     // Check if database is configured
-    const checkInitialization = () => {
+    const checkInitialization = async () => {
       const initialized = databaseConfig.isInitialized();
       setIsInitialized(initialized);
       
@@ -47,11 +25,24 @@ export function AuthProvider({ children }) {
         try {
           // Initialize auth listener only if database is configured
           authService.initializeAuthListener();
-          
+
           // Add auth state listener
-          authService.addAuthStateListener((user) => {
+          authService.addAuthStateListener(async (user) => {
             setUser(user);
+            if (user) {
+              const jwt = await authService.getAuthToken();
+              setToken(jwt);
+            } else {
+              setToken(null);
+            }
           });
+
+          const currentUser = authService.getCurrentUser();
+          if (currentUser) {
+            setUser(currentUser);
+            const jwt = await authService.getAuthToken();
+            setToken(jwt);
+          }
         } catch (error) {
           console.error('Error initializing auth:', error);
         }
@@ -94,6 +85,7 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     try {
       await authService.signOut();
+      setToken(null);
     } catch (error) {
       throw error;
     }
@@ -102,6 +94,7 @@ export function AuthProvider({ children }) {
   // Value to be provided by the context
   const contextValue = {
     user,
+    token,
     isLoading,
     isInitialized,
     signIn,
