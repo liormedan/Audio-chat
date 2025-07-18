@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Depends, Req
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from auth import get_current_user
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import uvicorn
@@ -15,12 +15,6 @@ from datetime import datetime
 import uuid
 import numpy as np
 from pathlib import Path
-import requests
-from google.oauth2 import id_token as google_id_token
-from google.auth.transport import requests as google_requests
-import firebase_admin
-from firebase_admin import auth as firebase_auth, credentials as firebase_credentials
-from supabase import create_client, Client
 
 # Audio processing imports
 try:
@@ -94,88 +88,6 @@ class TextToSpeechRequest(BaseModel):
 conversations = {}
 api_keys = {}
 user_files = {}  # Store user files mapping: user_id -> [file_info]
-
-# Authentication setup
-security = HTTPBearer()
-
-# Authentication functions
-async def verify_google_token(token: str):
-    """Verify Google ID token"""
-    try:
-        google_client_id = os.environ.get("GOOGLE_CLIENT_ID") or "484800218204-8snu9s0vvc9176aqug9759ulh1rio431.apps.googleusercontent.com"
-        idinfo = google_id_token.verify_oauth2_token(token, google_requests.Request(), google_client_id)
-        return {
-            "uid": idinfo.get("sub"),
-            "email": idinfo.get("email"),
-            "name": idinfo.get("name"),
-        }
-    except Exception as e:
-        logger.error(f"Google token verification failed: {str(e)}")
-        raise HTTPException(status_code=401, detail="Invalid authentication token")
-
-async def verify_firebase_token(token: str):
-    """Verify Firebase ID token"""
-    try:
-        if not firebase_admin._apps:
-            try:
-                cred_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
-                if cred_json:
-                    cred = firebase_credentials.Certificate(json.loads(cred_json))
-                else:
-                    cred = firebase_credentials.ApplicationDefault()
-                firebase_admin.initialize_app(cred)
-            except Exception:
-                firebase_admin.initialize_app()
-        decoded = firebase_auth.verify_id_token(token)
-        return {
-            "uid": decoded.get("uid") or decoded.get("sub"),
-            "email": decoded.get("email"),
-            "name": decoded.get("name"),
-        }
-    except Exception as e:
-        logger.error(f"Firebase token verification failed: {str(e)}")
-        raise HTTPException(status_code=401, detail="Invalid authentication token")
-
-async def verify_supabase_token(token: str):
-    """Verify Supabase JWT token"""
-    try:
-        supabase_url = os.environ.get("SUPABASE_URL")
-        supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_ANON_KEY")
-        if not supabase_url or not supabase_key:
-            raise ValueError("Supabase credentials not configured")
-        client: Client = create_client(supabase_url, supabase_key)
-        user_resp = client.auth.get_user(token)
-        if not user_resp or not user_resp.user:
-            raise ValueError("Invalid token")
-        user = user_resp.user
-        return {"sub": user.id, "email": user.email}
-    except Exception as e:
-        logger.error(f"Supabase token verification failed: {str(e)}")
-        raise HTTPException(status_code=401, detail="Invalid authentication token")
-
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Get current authenticated user"""
-    token = credentials.credentials
-
-    verifiers = [
-        (verify_google_token, "uid", "google"),
-        (verify_firebase_token, "uid", "firebase"),
-        (verify_supabase_token, "sub", "supabase"),
-    ]
-
-    for verifier, id_key, provider in verifiers:
-        try:
-            user = await verifier(token)
-            if user:
-                return {"id": user[id_key], "email": user.get("email"), "provider": provider}
-        except HTTPException:
-            continue
-
-    # For development, allow a special test token
-    if token == "dev_test_token":
-        return {"id": "test_user_123", "email": "test@example.com", "provider": "development"}
-
-    raise HTTPException(status_code=401, detail="Invalid authentication token")
 
 # Routes
 @app.get("/")
@@ -331,97 +243,6 @@ class AudioProcessingRequest(BaseModel):
 class AudioEffect(BaseModel):
     type: str  # eq, compression, reverb, etc.
     parameters: Dict[str, Any]
-
-# Audio processing functions
-def apply_eq(audio_data, sample_rate, parameters):
-    """Apply equalization to audio data"""
-    try:
-        # This is a simplified example - in a real implementation, 
-        # we would use proper DSP techniques for equalization
-        import librosa.effects as effects
-        
-        # Extract parameters
-        low_shelf = parameters.get('low_shelf', 0)
-        low_mid = parameters.get('low_mid', 0)
-        mid = parameters.get('mid', 0)
-        high_mid = parameters.get('high_mid', 0)
-        high = parameters.get('high', 0)
-        
-        # Apply simple gain adjustments to different frequency bands
-        # This is a very simplified approach - real EQ would use filters
-        if low_shelf != 0:
-            # Apply low shelf EQ (affect frequencies below 250Hz)
-            low_mask = librosa.filters.mr_frequencies(sample_rate) < 250
-            audio_data[:, low_mask] = audio_data[:, low_mask] * (10 ** (low_shelf / 20))
-            
-        # Similar processing for other bands...
-        
-        return audio_data
-    except Exception as e:
-        logger.error(f"Error applying EQ: {str(e)}")
-        return audio_data
-
-def apply_compression(audio_data, parameters):
-    """Apply dynamic range compression to audio data"""
-    try:
-        # Extract parameters
-        threshold = parameters.get('threshold', -20)
-        ratio = parameters.get('ratio', 4)
-        attack = parameters.get('attack', 5)
-        release = parameters.get('release', 50)
-        
-        # Simple compression algorithm
-        # This is a simplified version - real compression would be more sophisticated
-        threshold_linear = 10 ** (threshold / 20)
-        
-        # Calculate gain reduction
-        gain_reduction = np.zeros_like(audio_data)
-        for i in range(len(audio_data)):
-            if abs(audio_data[i]) > threshold_linear:
-                gain_reduction[i] = abs(audio_data[i]) / threshold_linear
-                gain_reduction[i] = gain_reduction[i] ** (1/ratio - 1)
-            else:
-                gain_reduction[i] = 1.0
-                
-        # Apply gain reduction
-        compressed_audio = audio_data * gain_reduction
-        
-        return compressed_audio
-    except Exception as e:
-        logger.error(f"Error applying compression: {str(e)}")
-        return audio_data
-
-def apply_reverb(audio_data, sample_rate, parameters):
-    """Apply reverb effect to audio data"""
-    try:
-        # Extract parameters
-        room_size = parameters.get('room_size', 0.5)
-        damping = parameters.get('damping', 0.5)
-        wet_level = parameters.get('wet_level', 0.33)
-        dry_level = parameters.get('dry_level', 0.4)
-        
-        # Simple convolution reverb
-        # In a real implementation, we would use a proper reverb algorithm or IR convolution
-        reverb_time = int(room_size * sample_rate)
-        impulse_response = np.zeros(reverb_time)
-        decay = np.linspace(1, 0, reverb_time) ** damping
-        impulse_response = decay * np.random.randn(reverb_time)
-        
-        # Apply convolution
-        from scipy import signal
-        reverb_audio = signal.convolve(audio_data, impulse_response, mode='full')[:len(audio_data)]
-        
-        # Mix dry and wet signals
-        output = dry_level * audio_data + wet_level * reverb_audio
-        
-        # Normalize to prevent clipping
-        if np.max(np.abs(output)) > 1.0:
-            output = output / np.max(np.abs(output))
-            
-        return output
-    except Exception as e:
-        logger.error(f"Error applying reverb: {str(e)}")
-        return audio_data
 
 # Extensions API routes
 @app.get("/api/extensions")
