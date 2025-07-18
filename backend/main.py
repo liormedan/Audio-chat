@@ -29,6 +29,7 @@ try:
     from cache_manager import cache_manager
     from parallel_processor import parallel_processor
     from llm_processor import llm_processor
+    from extensions_manager import extensions_manager
 except ImportError:
     logging.warning("Audio processing libraries not installed. Some features may not work.")
     pass
@@ -455,6 +456,81 @@ def apply_reverb(audio_data, sample_rate, parameters):
     except Exception as e:
         logger.error(f"Error applying reverb: {str(e)}")
         return audio_data
+
+# Extensions API routes
+@app.get("/api/extensions")
+async def get_extensions(current_user: dict = Depends(get_current_user)):
+    """
+    Get all available extensions for the current user
+    """
+    try:
+        user_id = current_user["id"]
+        return extensions_manager.get_user_extensions(user_id)
+    except Exception as e:
+        logger.error(f"Error getting extensions: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/extensions/{extension_id}")
+async def get_extension(extension_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Get details for a specific extension
+    """
+    try:
+        extension = extensions_manager.get_extension(extension_id)
+        if not extension:
+            raise HTTPException(status_code=404, detail="Extension not found")
+        
+        # Check if user has access to premium extension
+        user_id = current_user["id"]
+        if extension.premium and not extensions_manager.is_extension_enabled(user_id, extension_id):
+            extension_dict = extension.to_dict()
+            extension_dict["enabled"] = False
+            return extension_dict
+        
+        extension_dict = extension.to_dict()
+        extension_dict["enabled"] = extensions_manager.is_extension_enabled(user_id, extension_id)
+        return extension_dict
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting extension: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/extensions/{extension_id}/enable")
+async def enable_extension(extension_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Enable an extension for the current user
+    """
+    try:
+        user_id = current_user["id"]
+        success = extensions_manager.enable_extension(user_id, extension_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Extension not found")
+        
+        return {"status": "success", "message": f"Extension {extension_id} enabled"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error enabling extension: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/extensions/{extension_id}/disable")
+async def disable_extension(extension_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Disable an extension for the current user
+    """
+    try:
+        user_id = current_user["id"]
+        success = extensions_manager.disable_extension(user_id, extension_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Extension not found or not enabled")
+        
+        return {"status": "success", "message": f"Extension {extension_id} disabled"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error disabling extension: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Audio file routes with authentication
 @app.post("/api/audio/upload")
@@ -1276,4 +1352,103 @@ async def get_audio_capabilities():
         "caching": True
     }
     
-    return capabilities
+    return capabilities# 
+Extensions API routes
+@app.get("/api/extensions")
+async def get_extensions(current_user: dict = Depends(get_current_user)):
+    """
+    Get all available extensions for the current user
+    """
+    try:
+        user_id = current_user["id"]
+        extensions = extensions_manager.get_user_extensions(user_id)
+        return extensions
+    except Exception as e:
+        logger.error(f"Error getting extensions: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/extensions/{extension_id}")
+async def get_extension(extension_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Get details for a specific extension
+    """
+    try:
+        extension = extensions_manager.get_extension(extension_id)
+        if not extension:
+            raise HTTPException(status_code=404, detail="Extension not found")
+        
+        user_id = current_user["id"]
+        extension_dict = extension.to_dict()
+        extension_dict["enabled"] = extensions_manager.is_extension_enabled(user_id, extension_id)
+        
+        return extension_dict
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting extension: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/extensions/{extension_id}/enable")
+async def enable_extension(extension_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Enable an extension for the current user
+    """
+    try:
+        user_id = current_user["id"]
+        
+        # Check if extension exists
+        extension = extensions_manager.get_extension(extension_id)
+        if not extension:
+            raise HTTPException(status_code=404, detail="Extension not found")
+        
+        # Check if premium (in a real implementation, check if user has purchased)
+        if extension.premium:
+            # For now, we'll allow it for development purposes
+            # In production, check subscription status here
+            pass
+        
+        # Enable extension
+        success = extensions_manager.enable_extension(user_id, extension_id)
+        if not success:
+            raise HTTPException(status_code=400, detail="Failed to enable extension")
+        
+        return {"status": "success", "message": f"Extension {extension_id} enabled"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error enabling extension: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/extensions/{extension_id}/disable")
+async def disable_extension(extension_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Disable an extension for the current user
+    """
+    try:
+        user_id = current_user["id"]
+        
+        # Disable extension
+        success = extensions_manager.disable_extension(user_id, extension_id)
+        if not success:
+            raise HTTPException(status_code=400, detail="Failed to disable extension")
+        
+        return {"status": "success", "message": f"Extension {extension_id} disabled"}
+    except Exception as e:
+        logger.error(f"Error disabling extension: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/extensions/categories")
+async def get_extension_categories():
+    """
+    Get all extension categories
+    """
+    try:
+        # Get unique categories from all extensions
+        categories = set()
+        for extension in extensions_manager.extensions.values():
+            categories.add(extension.category)
+        
+        return list(categories)
+    except Exception as e:
+        logger.error(f"Error getting extension categories: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

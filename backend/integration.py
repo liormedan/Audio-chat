@@ -25,6 +25,7 @@ try:
     from cache_manager import cache_manager
     from parallel_processor import parallel_processor
     from llm_processor import llm_processor
+    from extensions_manager import extensions_manager
     
     COMPONENTS_AVAILABLE = True
 except ImportError as e:
