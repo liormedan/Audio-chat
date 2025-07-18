@@ -103,27 +103,30 @@ function AudioRecorder({ onAudioRecorded }) {
           </div>
           <AudioVisualizer isRecording={isRecording} audioStream={audioStream} />
           <div className="recording-buttons">
-            <button 
-              className="recording-button cancel" 
+            <button
+              className="recording-button cancel"
               onClick={cancelRecording}
               title="Cancel recording"
+              aria-label="Cancel recording"
             >
               ✕
             </button>
-            <button 
-              className="recording-button stop" 
+            <button
+              className="recording-button stop"
               onClick={stopRecording}
               title="Stop recording"
+              aria-label="Stop recording"
             >
               ■
             </button>
           </div>
         </div>
       ) : (
-        <button 
-          className="mic-button" 
+        <button
+          className="mic-button"
           onClick={startRecording}
           title="Start voice recording"
+          aria-label="Start voice recording"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>

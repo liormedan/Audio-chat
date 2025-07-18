@@ -180,9 +180,10 @@ function AudioEditor({ audioUrl, onSegmentSelect, onExportClick }) {
     <div className="audio-editor">
       <div className="editor-controls">
         <div className="playback-controls">
-          <button 
+          <button
             className="play-button"
             onClick={togglePlayPause}
+            aria-label={isPlaying ? 'Pause playback' : 'Play selection'}
           >
             {isPlaying ? '⏸️' : '▶️'}
           </button>

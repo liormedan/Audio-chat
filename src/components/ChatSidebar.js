@@ -110,10 +110,11 @@ function ChatSidebar({ onSelectChat, activeChat }) {
     <div className="chat-sidebar">
       <div className="sidebar-header">
         <h2>Chats</h2>
-        <button 
+        <button
           className="new-chat-icon-button"
           onClick={() => setIsCreatingChat(true)}
           title="New Chat"
+          aria-label="New Chat"
         >
           +
         </button>
@@ -171,10 +172,11 @@ function ChatSidebar({ onSelectChat, activeChat }) {
                   <span className="chat-item-date">{chat.date}</span>
                 </div>
               </div>
-              <button 
+              <button
                 className="delete-chat-button"
                 onClick={(e) => deleteChat(e, chat.id)}
                 title="Delete chat"
+                aria-label="Delete chat"
               >
                 ×
               </button>

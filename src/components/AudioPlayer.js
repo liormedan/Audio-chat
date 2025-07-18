@@ -84,9 +84,10 @@ function AudioPlayer({ audioUrl, waveformData, isProcessed = false, title }) {
       />
       
       <div className="player-controls">
-        <button 
-          className={`play-button ${isPlaying ? 'playing' : ''}`} 
+        <button
+          className={`play-button ${isPlaying ? 'playing' : ''}`}
           onClick={togglePlay}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
         >
           {isPlaying ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

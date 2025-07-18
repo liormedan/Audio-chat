@@ -68,7 +68,7 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
               {activePage === 'apiKeys' && 'API Keys'}
               {activePage === 'helpFaq' && 'Help & FAQ'}
             </h3>
-            <button className="close-button" onClick={onClose}>×</button>
+            <button className="close-button" onClick={onClose} aria-label="Close settings">×</button>
           </div>
           <div className="settings-body">
             {renderActivePage()}
