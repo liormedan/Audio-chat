@@ -10,12 +10,13 @@ import SpectrumAnalyzer from './SpectrumAnalyzer';
 import AudioExport from './AudioExport';
 import { useAuth } from '../context/AuthContext';
 import uploadService from '../services/upload';
-import { getAudioWaveform } from '../services/authenticatedApi';
+import useAuthenticatedApi from '../services/useAuthenticatedApi';
 import processingHistoryService from '../services/processingHistory';
 import './AudioProcessingInterface.css';
 
 function AudioProcessingInterface() {
   const { isAuthenticated } = useAuth();
+  const { getAudioWaveform } = useAuthenticatedApi();
   const [originalAudio, setOriginalAudio] = useState(null);
   const [processedAudio, setProcessedAudio] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);

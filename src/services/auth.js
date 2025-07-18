@@ -232,6 +232,34 @@ class AuthService {
     return this.currentUser !== null;
   }
 
+  // Retrieve JWT token for current user
+  async getAuthToken() {
+    if (!this.currentUser) return null;
+
+    const provider = databaseConfig.getProvider();
+
+    try {
+      if (provider === DB_PROVIDERS.FIREBASE && this.currentUser.getIdToken) {
+        return await this.currentUser.getIdToken();
+      }
+
+      if (provider === DB_PROVIDERS.SUPABASE) {
+        const supabase = databaseConfig.getSupabaseClient();
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        return data.session?.access_token || null;
+      }
+
+      if (this.currentUser.id_token) {
+        return this.currentUser.id_token;
+      }
+    } catch (error) {
+      console.error('Error retrieving auth token:', error);
+    }
+
+    return null;
+  }
+
   // Add auth state listener
   addAuthStateListener(callback) {
     this.authStateListeners.push(callback);

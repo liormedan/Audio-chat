@@ -13,13 +13,6 @@ const firebaseConfig = {
   appId: "1:484800218204:web:3b5e9f9d7d56a9e9f9d7d5"
 };
 
-// Mock user data for direct access
-const mockUser = {
-  uid: "direct-access-user",
-  email: "direct-access@example.com",
-  displayName: "Direct Access User",
-  photoURL: null
-};
 
 function AutoLogin() {
   const [isLoading, setIsLoading] = useState(true);
@@ -42,11 +35,8 @@ function AutoLogin() {
               await authService.signInWithGoogle();
             } catch (error) {
               console.error('Google sign in error:', error);
-              
-              // If Google sign-in fails, use a mock user for direct access
-              // This is a workaround to bypass authentication for direct access
-              localStorage.setItem('directAccessUser', JSON.stringify(mockUser));
-              window.location.href = '/?authenticated=true';
+              setError('Failed to sign in automatically: ' + error.message);
+              setIsLoading(false);
             }
           }, 1000);
         } else {
