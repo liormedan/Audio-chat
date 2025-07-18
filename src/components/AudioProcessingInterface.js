@@ -13,6 +13,7 @@ import { useAuth } from '../context/AuthContext';
 import uploadService from '../services/upload';
 import { getAudioWaveform } from '../services/authenticatedApi';
 import processingHistoryService from '../services/processingHistory';
+import Spinner from './Spinner';
 import './AudioProcessingInterface.css';
 
 function AudioProcessingInterface() {
@@ -311,13 +312,16 @@ function AudioProcessingInterface() {
                 </div>
               </div>
               
-              <button 
-                className="process-button"
-                onClick={handleProcessAudio}
-                disabled={isProcessing || !processingInstructions.trim()}
-              >
-                {isProcessing ? 'Processing...' : 'Process Audio'}
-              </button>
+              <div className="process-button-wrapper">
+                <button
+                  className="process-button"
+                  onClick={handleProcessAudio}
+                  disabled={isProcessing || !processingInstructions.trim()}
+                >
+                  {isProcessing ? 'Processing...' : 'Process Audio'}
+                </button>
+                {isProcessing && <Spinner size={24} />}
+              </div>
             </div>
             
             {processedAudio && (
