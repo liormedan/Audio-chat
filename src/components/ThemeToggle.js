@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 import './ThemeToggle.css';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 const ThemeToggle = () => {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -12,9 +13,9 @@ const ThemeToggle = () => {
       title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDarkMode ? (
-        <span className="theme-toggle-icon">☀️</span>
+        <FaSun aria-label="Light mode" className="theme-toggle-icon" />
       ) : (
-        <span className="theme-toggle-icon">🌙</span>
+        <FaMoon aria-label="Dark mode" className="theme-toggle-icon" />
       )}
       <span className="theme-toggle-text">
         {isDarkMode ? "Light Mode" : "Dark Mode"}

@@ -4,13 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import './MainLayout.css';
 
-// Icons (simple text-based for now)
-const HomeIcon = () => <span>🏠</span>;
-const ChatIcon = () => <span>💬</span>;
-const AudioIcon = () => <span>🎵</span>;
-const SettingsIcon = () => <span>⚙️</span>;
-const ExtensionsIcon = () => <span>🧩</span>;
-const HelpIcon = () => <span>❓</span>;
+// Icons from react-icons
+import {
+  FaHome,
+  FaComments,
+  FaMusic,
+  FaCog,
+  FaPuzzlePiece,
+  FaQuestionCircle,
+  FaUser,
+  FaSignOutAlt,
+} from 'react-icons/fa';
 
 const MainLayout = ({ children }) => {
   const { user, signOut } = useAuth();
@@ -58,22 +62,22 @@ const MainLayout = ({ children }) => {
         
         <SidebarSection>
           <SidebarNav>
-            <SidebarNavItem 
-              icon={<HomeIcon />} 
+            <SidebarNavItem
+              icon={<FaHome aria-label="Home" />}
               active={activeItem === 'home'}
               onClick={() => handleNavItemClick('home')}
             >
               Home
             </SidebarNavItem>
-            <SidebarNavItem 
-              icon={<ChatIcon />} 
+            <SidebarNavItem
+              icon={<FaComments aria-label="Chats" />}
               active={activeItem === 'chats'}
               onClick={() => handleNavItemClick('chats')}
             >
               Chats
             </SidebarNavItem>
-            <SidebarNavItem 
-              icon={<AudioIcon />} 
+            <SidebarNavItem
+              icon={<FaMusic aria-label="Audio" />}
               active={activeItem === 'audio'}
               onClick={() => handleNavItemClick('audio')}
             >
@@ -84,22 +88,22 @@ const MainLayout = ({ children }) => {
         
         <SidebarSection title="Tools">
           <SidebarNav>
-            <SidebarNavItem 
-              icon={<ExtensionsIcon />} 
+            <SidebarNavItem
+              icon={<FaPuzzlePiece aria-label="Extensions" />}
               active={activeItem === 'extensions'}
               onClick={() => handleNavItemClick('extensions')}
             >
               Extensions
             </SidebarNavItem>
-            <SidebarNavItem 
-              icon={<SettingsIcon />} 
+            <SidebarNavItem
+              icon={<FaCog aria-label="Settings" />}
               active={activeItem === 'settings'}
               onClick={() => handleNavItemClick('settings')}
             >
               Settings
             </SidebarNavItem>
-            <SidebarNavItem 
-              icon={<HelpIcon />} 
+            <SidebarNavItem
+              icon={<FaQuestionCircle aria-label="Help" />}
               active={activeItem === 'help'}
               onClick={() => handleNavItemClick('help')}
             >
@@ -114,13 +118,13 @@ const MainLayout = ({ children }) => {
           </div>
           <div className="user-profile">
             <div className="user-avatar">
-              <span>👤</span>
+              <FaUser aria-label="User" />
             </div>
             <div className="user-info">
               <div className="user-name">{user?.email || 'User'}</div>
               <div className="user-status">
                 <button className="logout-button" onClick={handleLogout}>
-                  Sign Out
+                  <FaSignOutAlt aria-label="Sign Out" /> Sign Out
                 </button>
               </div>
             </div>
