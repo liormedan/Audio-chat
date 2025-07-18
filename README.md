@@ -84,13 +84,15 @@ AudioChat is an AI-powered audio engineering assistant that helps you edit, mix,
    ```
    npm install
    ```
+2. Configure environment variables by copying `.env.example` to `.env` and
+   adjusting `REACT_APP_API_BASE` if your backend is hosted elsewhere.
 
-2. Start the development server:
+3. Start the development server:
    ```
    npm start
    ```
 
-3. Open your browser and navigate to `http://localhost:3000`
+4. Open your browser and navigate to `http://localhost:3000`
 
 ## Usage
 
