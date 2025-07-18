@@ -5,6 +5,9 @@ import AudioPlayer from './AudioPlayer';
 import ProcessingHistory from './ProcessingHistory';
 import AudioComparison from './AudioComparison';
 import ParameterAdjuster from './ParameterAdjuster';
+import AudioEditor from './AudioEditor';
+import SpectrumAnalyzer from './SpectrumAnalyzer';
+import AudioExport from './AudioExport';
 import { useAuth } from '../context/AuthContext';
 import uploadService from '../services/upload';
 import { getAudioWaveform } from '../services/authenticatedApi';
@@ -22,6 +25,9 @@ function AudioProcessingInterface() {
   const [processedWaveform, setProcessedWaveform] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [selectedSegment, setSelectedSegment] = useState(null);
+  const [showExport, setShowExport] = useState(false);
+  const [showSpectrum, setShowSpectrum] = useState(false);
   
   // Load waveform data when audio is uploaded
   useEffect(() => {
@@ -138,14 +144,41 @@ function AudioProcessingInterface() {
               <h3>Audio Files</h3>
               <div className="section-actions">
                 <button 
-                  className={`history-toggle-button ${showHistory ? 'active' : ''}`}
+                  className={`action-button ${showHistory ? 'active' : ''}`}
                   onClick={() => setShowHistory(!showHistory)}
                 >
                   {showHistory ? 'Hide History' : 'Show History'}
                 </button>
+                <button 
+                  className={`action-button ${showSpectrum ? 'active' : ''}`}
+                  onClick={() => setShowSpectrum(!showSpectrum)}
+                >
+                  {showSpectrum ? 'Hide Spectrum' : 'Show Spectrum'}
+                </button>
+                <button 
+                  className={`action-button ${showExport ? 'active' : ''}`}
+                  onClick={() => setShowExport(!showExport)}
+                >
+                  {showExport ? 'Hide Export' : 'Export Options'}
+                </button>
               </div>
             </div>
             
+            {/* Advanced Audio Editor with waveform visualization */}
+            <AudioEditor 
+              audioUrl={uploadService.getAudioUrl(originalAudio.file_id)}
+              onSegmentSelect={(segment) => {
+                // Store selected segment for processing specific parts
+                setSelectedSegment(segment);
+              }}
+              onExportClick={(segment) => {
+                // Show export dialog
+                setShowExport(true);
+                setSelectedSegment(segment);
+              }}
+            />
+            
+            {/* Traditional audio players for backward compatibility */}
             <div className="audio-players">
               <AudioPlayer 
                 audioUrl={uploadService.getAudioUrl(originalAudio.file_id)}
@@ -181,6 +214,22 @@ function AudioProcessingInterface() {
                   // Load the waveform data
                   loadWaveformData(entry.processedFileId, true);
                 }}
+              />
+            )}
+            
+            {/* Show spectrum analyzer if enabled */}
+            {showSpectrum && (
+              <SpectrumAnalyzer 
+                audioUrl={uploadService.getAudioUrl(originalAudio.file_id)}
+                colorMode="rainbow"
+              />
+            )}
+            
+            {/* Show export options if enabled */}
+            {showExport && (
+              <AudioExport 
+                audioFileId={originalAudio.file_id}
+                segment={selectedSegment}
               />
             )}
             

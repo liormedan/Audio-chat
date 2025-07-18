@@ -26,6 +26,8 @@ try:
     from audio_processing import audio_processor
     from advanced_audio_effects import advanced_effects
     from audio_export import audio_exporter
+    from cache_manager import cache_manager
+    from parallel_processor import parallel_processor
 except ImportError:
     logging.warning("Audio processing libraries not installed. Some features may not work.")
     pass
@@ -536,6 +538,7 @@ async def process_audio(request: AudioProcessingRequest, current_user: dict = De
     Process an audio file based on natural language instructions (authenticated)
     Uses advanced audio processing capabilities to interpret and apply effects
     Supports processing specific segments of audio
+    Uses cache for improved performance
     """
     try:
         # Find the original file in user's directory
@@ -543,6 +546,50 @@ async def process_audio(request: AudioProcessingRequest, current_user: dict = De
         user_id = current_user["id"]
         user_upload_dir = UPLOAD_DIR / user_id
         
+        # Check cache first if not using custom effects
+        if not request.effects:
+            cached_audio = cache_manager.get_processed_audio(
+                file_id, 
+                request.instructions,
+                segment=request.segment
+            )
+            
+            if cached_audio:
+                logger.info(f"Using cached processed audio for file {file_id}")
+                audio_data, sample_rate = cached_audio
+                
+                # Get cached analysis or generate new one
+                audio_analysis = cache_manager.get_audio_analysis(file_id)
+                if not audio_analysis:
+                    audio_analysis = audio_processor.analyze_audio(audio_data, sample_rate)
+                    cache_manager.cache_audio_analysis(file_id, audio_analysis)
+                
+                # Generate a new file ID for the cached result
+                processed_file_id = str(uuid.uuid4())
+                file_extension = ".wav"  # Default to WAV for cached audio
+                processed_file_path = PROCESSED_DIR / f"{processed_file_id}{file_extension}"
+                
+                # Save the processed audio
+                sf.write(processed_file_path, audio_data, sample_rate)
+                
+                # Extract processing steps from cache or generate placeholder
+                processing_steps = request.instructions.split('\n')
+                
+                # Generate response with processing details
+                response = {
+                    "original_file_id": file_id,
+                    "processed_file_id": processed_file_id,
+                    "processing_steps": processing_steps,
+                    "audio_url": f"/audio/{processed_file_path.name}",
+                    "instructions": request.instructions,
+                    "audio_analysis": audio_analysis,
+                    "segment": request.segment,
+                    "cached": True
+                }
+                
+                return response
+        
+        # If not in cache, process the audio
         original_files = list(user_upload_dir.glob(f"{file_id}.*"))
         
         if not original_files:
@@ -584,21 +631,54 @@ async def process_audio(request: AudioProcessingRequest, current_user: dict = De
             
             logger.info(f"Processing segment: {start_time}s to {segment_info['end']}s")
         
-        # Analyze the audio to get its characteristics
-        audio_analysis = audio_processor.analyze_audio(y, sr)
+        # Check if analysis is cached
+        audio_analysis = cache_manager.get_audio_analysis(file_id)
+        if not audio_analysis:
+            # Analyze the audio to get its characteristics
+            audio_analysis = audio_processor.analyze_audio(y, sr)
+            # Cache the analysis
+            cache_manager.cache_audio_analysis(file_id, audio_analysis)
+            
         logger.info(f"Audio analysis: {audio_analysis}")
         
         # Process the audio using our advanced audio processor
-        if request.effects:
-            # Use explicitly provided effects chain if available
-            processed_audio, processing_steps = audio_processor.process_audio(
-                y, sr, request.instructions, request.effects
-            )
+        # Check if file is large enough to benefit from parallel processing
+        is_large_file = len(y) > sr * 30  # Files longer than 30 seconds
+        
+        if is_large_file:
+            logger.info(f"Using parallel processing for large file: {len(y)/sr:.2f} seconds")
+            
+            if request.effects:
+                # Use explicitly provided effects chain with parallel processing
+                processed_audio = parallel_processor.process_audio_with_effects_parallel(
+                    y, sr, request.effects
+                )
+                # Get processing steps from effects
+                processing_steps = [f"Applied {effect['type']} effect" for effect in request.effects]
+            else:
+                # Parse natural language instructions first
+                effects_chain = audio_processor.parse_instructions(request.instructions, audio_analysis)
+                
+                # Then apply effects in parallel
+                processed_audio = parallel_processor.process_audio_with_effects_parallel(
+                    y, sr, effects_chain
+                )
+                
+                # Generate processing steps descriptions
+                processing_steps = [audio_processor.describe_effect(effect["type"], effect["parameters"]) 
+                                   for effect in effects_chain]
         else:
-            # Otherwise, parse natural language instructions
-            processed_audio, processing_steps = audio_processor.process_audio(
-                y, sr, request.instructions
-            )
+            # For smaller files, use regular processing
+            if request.effects:
+                # Use explicitly provided effects chain
+                processed_audio, processing_steps = audio_processor.process_audio(
+                    y, sr, request.instructions, request.effects
+                )
+            else:
+                # Otherwise, parse natural language instructions
+                processed_audio, processing_steps = audio_processor.process_audio(
+                    y, sr, request.instructions
+                )
         
         # If we processed a segment, merge it back into the full audio
         if segment_info:
@@ -609,6 +689,16 @@ async def process_audio(request: AudioProcessingRequest, current_user: dict = De
             merged_audio = full_audio.copy()
             merged_audio[start_sample:end_sample] = processed_audio
             processed_audio = merged_audio
+        
+        # Cache the processed audio
+        cache_manager.cache_processed_audio(
+            file_id,
+            request.instructions,
+            processed_audio,
+            sr,
+            effects=request.effects,
+            segment=segment_info
+        )
         
         # Save the processed audio
         processed_file_id = str(uuid.uuid4())
@@ -623,7 +713,8 @@ async def process_audio(request: AudioProcessingRequest, current_user: dict = De
             "audio_url": f"/audio/{processed_file_path.name}",
             "instructions": request.instructions,
             "audio_analysis": audio_analysis,
-            "segment": segment_info
+            "segment": segment_info,
+            "cached": False
         }
         
         return response
@@ -705,9 +796,16 @@ async def get_audio_file(file_id: str, current_user: dict = Depends(get_current_
 async def get_audio_waveform(file_id: str, points: int = 1000, current_user: dict = Depends(get_current_user)):
     """
     Get waveform data for visualization (authenticated)
+    Uses cache for improved performance
     """
     try:
         user_id = current_user["id"]
+        
+        # Check cache first
+        cached_waveform = cache_manager.get_waveform_data(file_id, points)
+        if cached_waveform:
+            logger.info(f"Using cached waveform data for file {file_id}")
+            return cached_waveform
         
         # Find the file
         processed_files = list(PROCESSED_DIR.glob(f"{file_id}.*"))
@@ -731,12 +829,17 @@ async def get_audio_waveform(file_id: str, points: int = 1000, current_user: dic
         waveform = librosa.resample(y, orig_sr=sr, target_sr=points/librosa.get_duration(y=y, sr=sr))
         waveform = waveform[:points].tolist()
         
-        return {
+        waveform_data = {
             "file_id": file_id,
             "waveform": waveform,
             "sample_rate": sr,
             "duration": librosa.get_duration(y=y, sr=sr)
         }
+        
+        # Cache the waveform data
+        cache_manager.cache_waveform_data(file_id, waveform_data, points)
+        
+        return waveform_data
     except HTTPException:
         raise
     except Exception as e:
@@ -851,4 +954,325 @@ async def get_supported_formats():
         }
     ]
     
-    return formats
+    return formats@
+app.post("/api/audio/separate")
+async def separate_audio_sources(
+    file_id: str = Form(...),
+    mode: str = Form("2stems"),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Separate audio into different sources (vocals, accompaniment, etc.)
+    
+    Args:
+        file_id: ID of the audio file to separate
+        mode: Separation mode ('2stems', '4stems', or '5stems')
+    """
+    try:
+        user_id = current_user["id"]
+        user_upload_dir = UPLOAD_DIR / user_id
+        
+        # Find the file
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
+        
+        if not original_files:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+        
+        original_file = original_files[0]
+        file_extension = original_file.suffix
+        
+        # Load the audio file
+        y, sr = librosa.load(original_file, sr=None)
+        
+        # Separate sources
+        sources = advanced_effects.separate_sources(y, sr, mode)
+        
+        # Save each source as a separate file
+        result = {
+            "original_file_id": file_id,
+            "sources": {}
+        }
+        
+        for source_name, source_data in sources.items():
+            if source_name == "original":
+                continue
+                
+            # Generate a unique ID for this source
+            source_id = f"{file_id}_{source_name}"
+            source_path = PROCESSED_DIR / f"{source_id}{file_extension}"
+            
+            # Save the source
+            sf.write(source_path, source_data, sr)
+            
+            # Add to result
+            result["sources"][source_name] = {
+                "file_id": source_id,
+                "audio_url": f"/audio/{source_path.name}"
+            }
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error separating audio sources: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/audio/enhance-vocals")
+async def enhance_vocals(
+    file_id: str = Form(...),
+    strength: float = Form(0.5),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Enhance vocals in audio
+    
+    Args:
+        file_id: ID of the audio file to enhance
+        strength: Enhancement strength (0.0 to 1.0)
+    """
+    try:
+        user_id = current_user["id"]
+        user_upload_dir = UPLOAD_DIR / user_id
+        
+        # Find the file
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
+        
+        if not original_files:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+        
+        original_file = original_files[0]
+        file_extension = original_file.suffix
+        
+        # Load the audio file
+        y, sr = librosa.load(original_file, sr=None)
+        
+        # Enhance vocals
+        enhanced = advanced_effects.enhance_vocals(y, sr, strength)
+        
+        # Save the enhanced audio
+        enhanced_id = str(uuid.uuid4())
+        enhanced_path = PROCESSED_DIR / f"{enhanced_id}{file_extension}"
+        sf.write(enhanced_path, enhanced, sr)
+        
+        return {
+            "original_file_id": file_id,
+            "enhanced_file_id": enhanced_id,
+            "audio_url": f"/audio/{enhanced_path.name}",
+            "strength": strength
+        }
+    except Exception as e:
+        logger.error(f"Error enhancing vocals: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/audio/isolate-instrument")
+async def isolate_instrument(
+    file_id: str = Form(...),
+    instrument: str = Form("vocals"),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Isolate a specific instrument from audio
+    
+    Args:
+        file_id: ID of the audio file to process
+        instrument: Instrument to isolate ('vocals', 'drums', 'bass', 'piano', 'other')
+    """
+    try:
+        user_id = current_user["id"]
+        user_upload_dir = UPLOAD_DIR / user_id
+        
+        # Find the file
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
+        
+        if not original_files:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+        
+        original_file = original_files[0]
+        file_extension = original_file.suffix
+        
+        # Load the audio file
+        y, sr = librosa.load(original_file, sr=None)
+        
+        # Isolate instrument
+        isolated = advanced_effects.isolate_instrument(y, sr, instrument)
+        
+        # Save the isolated audio
+        isolated_id = str(uuid.uuid4())
+        isolated_path = PROCESSED_DIR / f"{isolated_id}{file_extension}"
+        sf.write(isolated_path, isolated, sr)
+        
+        return {
+            "original_file_id": file_id,
+            "isolated_file_id": isolated_id,
+            "audio_url": f"/audio/{isolated_path.name}",
+            "instrument": instrument
+        }
+    except Exception as e:
+        logger.error(f"Error isolating instrument: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/audio/remove-instrument")
+async def remove_instrument(
+    file_id: str = Form(...),
+    instrument: str = Form("vocals"),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Remove a specific instrument from audio
+    
+    Args:
+        file_id: ID of the audio file to process
+        instrument: Instrument to remove ('vocals', 'drums', 'bass', 'piano', 'other')
+    """
+    try:
+        user_id = current_user["id"]
+        user_upload_dir = UPLOAD_DIR / user_id
+        
+        # Find the file
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
+        
+        if not original_files:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+        
+        original_file = original_files[0]
+        file_extension = original_file.suffix
+        
+        # Load the audio file
+        y, sr = librosa.load(original_file, sr=None)
+        
+        # Remove instrument
+        processed = advanced_effects.remove_instrument(y, sr, instrument)
+        
+        # Save the processed audio
+        processed_id = str(uuid.uuid4())
+        processed_path = PROCESSED_DIR / f"{processed_id}{file_extension}"
+        sf.write(processed_path, processed, sr)
+        
+        return {
+            "original_file_id": file_id,
+            "processed_file_id": processed_id,
+            "audio_url": f"/audio/{processed_path.name}",
+            "instrument_removed": instrument
+        }
+    except Exception as e:
+        logger.error(f"Error removing instrument: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/audio/denoise")
+async def denoise_audio(
+    file_id: str = Form(...),
+    strength: float = Form(0.5),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Remove noise from audio
+    
+    Args:
+        file_id: ID of the audio file to denoise
+        strength: Denoising strength (0.0 to 1.0)
+    """
+    try:
+        user_id = current_user["id"]
+        user_upload_dir = UPLOAD_DIR / user_id
+        
+        # Find the file
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
+        
+        if not original_files:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+        
+        original_file = original_files[0]
+        file_extension = original_file.suffix
+        
+        # Load the audio file
+        y, sr = librosa.load(original_file, sr=None)
+        
+        # Denoise audio
+        denoised = advanced_effects.denoise_audio(y, sr, strength)
+        
+        # Save the denoised audio
+        denoised_id = str(uuid.uuid4())
+        denoised_path = PROCESSED_DIR / f"{denoised_id}{file_extension}"
+        sf.write(denoised_path, denoised, sr)
+        
+        return {
+            "original_file_id": file_id,
+            "denoised_file_id": denoised_id,
+            "audio_url": f"/audio/{denoised_path.name}",
+            "strength": strength
+        }
+    except Exception as e:
+        logger.error(f"Error denoising audio: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/audio/harmonize")
+async def harmonize_audio(
+    file_id: str = Form(...),
+    semitones: str = Form("4,7"),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Add harmonies to audio (primarily for vocals)
+    
+    Args:
+        file_id: ID of the audio file to harmonize
+        semitones: Comma-separated list of semitone shifts for harmonies
+    """
+    try:
+        user_id = current_user["id"]
+        user_upload_dir = UPLOAD_DIR / user_id
+        
+        # Find the file
+        original_files = list(user_upload_dir.glob(f"{file_id}.*"))
+        
+        if not original_files:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+        
+        original_file = original_files[0]
+        file_extension = original_file.suffix
+        
+        # Load the audio file
+        y, sr = librosa.load(original_file, sr=None)
+        
+        # Parse semitones
+        semitone_list = [int(s.strip()) for s in semitones.split(",")]
+        
+        # Harmonize audio
+        harmonized = advanced_effects.harmonize_audio(y, sr, semitone_list)
+        
+        # Save the harmonized audio
+        harmonized_id = str(uuid.uuid4())
+        harmonized_path = PROCESSED_DIR / f"{harmonized_id}{file_extension}"
+        sf.write(harmonized_path, harmonized, sr)
+        
+        return {
+            "original_file_id": file_id,
+            "harmonized_file_id": harmonized_id,
+            "audio_url": f"/audio/{harmonized_path.name}",
+            "semitones": semitone_list
+        }
+    except Exception as e:
+        logger.error(f"Error harmonizing audio: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/audio/capabilities")
+async def get_audio_capabilities():
+    """
+    Get available audio processing capabilities
+    """
+    capabilities = {
+        "pedalboard_available": advanced_effects.pedalboard_available,
+        "spleeter_available": advanced_effects.spleeter_available,
+        "librosa_available": advanced_effects.librosa_available,
+        "effects": [
+            "eq", "compression", "reverb", "delay", "distortion",
+            "chorus", "phaser", "filter", "pitch_shift", "gain"
+        ],
+        "source_separation": advanced_effects.spleeter_available,
+        "vocal_enhancement": advanced_effects.spleeter_available,
+        "instrument_isolation": advanced_effects.spleeter_available,
+        "denoising": advanced_effects.librosa_available,
+        "harmonization": advanced_effects.spleeter_available and advanced_effects.librosa_available,
+        "parallel_processing": True,
+        "caching": True
+    }
+    
+    return capabilities

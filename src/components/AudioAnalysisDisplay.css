@@ -1,0 +1,228 @@
+.audio-analysis-display {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px solid #333;
+}
+
+.analysis-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.tab-button {
+  background: #333;
+  color: #aaa;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  background: #444;
+  color: #eee;
+}
+
+.tab-button.active {
+  background: #10a37f;
+  color: white;
+}
+
+.analysis-content {
+  min-height: 200px;
+}
+
+/* Overview tab */
+.analysis-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.summary-item {
+  background: #222;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.summary-label {
+  color: #aaa;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.summary-value {
+  color: #e2e8f0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.analysis-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meter-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meter-label {
+  color: #aaa;
+  font-size: 14px;
+  width: 100px;
+}
+
+.meter-bar {
+  flex: 1;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: #3182ce;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.meter-value {
+  color: #e2e8f0;
+  font-size: 14px;
+  width: 60px;
+  text-align: right;
+}
+
+/* Spectral tab */
+.analysis-spectral {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.spectral-item {
+  background: #222;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.spectral-label {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.spectral-value {
+  color: #e2e8f0;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.spectral-description {
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Dynamics tab */
+.analysis-dynamics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.dynamics-item {
+  background: #222;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.dynamics-label {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.dynamics-value {
+  color: #e2e8f0;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.dynamics-description {
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Musical tab */
+.analysis-musical {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.musical-item {
+  background: #222;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.musical-label {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.musical-value {
+  color: #e2e8f0;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.musical-description {
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .analysis-summary,
+  .analysis-dynamics,
+  .analysis-musical {
+    grid-template-columns: 1fr;
+  }
+  
+  .meter-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .meter-label {
+    width: 100%;
+  }
+  
+  .meter-value {
+    width: 100%;
+    text-align: left;
+  }
+}

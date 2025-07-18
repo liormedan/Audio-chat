@@ -21,4 +21,7 @@ PyJWT# Adv
 anced audio processing
 pedalboard
 pydub
-ffmpeg-python
+ffmpeg-python# Ad
+vanced audio processing
+spleeter
+tensorflow

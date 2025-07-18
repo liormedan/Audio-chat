@@ -1,0 +1,167 @@
+.audio-export {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px solid #333;
+}
+
+.audio-export h3 {
+  margin: 0 0 16px 0;
+  color: #e2e8f0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.segment-info {
+  background: #222;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.segment-info p {
+  margin: 0;
+  color: #aaaaaa;
+  font-size: 14px;
+}
+
+.export-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.export-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.export-option label {
+  color: #aaaaaa;
+  font-size: 14px;
+}
+
+.export-option select {
+  background: #333;
+  color: #e2e8f0;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.export-description {
+  flex: 1;
+  min-width: 200px;
+}
+
+.export-description p {
+  margin: 0;
+  color: #aaaaaa;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.export-actions {
+  margin-bottom: 16px;
+}
+
+.export-button {
+  background: #10a37f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.export-button:hover:not(:disabled) {
+  background: #0d8c6d;
+}
+
+.export-button:disabled {
+  background: #333;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.export-error {
+  background: #742a2a;
+  color: #fed7d7;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.export-error p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.export-result {
+  background: #2a4a38;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.export-result h4 {
+  margin: 0 0 12px 0;
+  color: #e2e8f0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.result-details {
+  margin-bottom: 16px;
+}
+
+.result-details p {
+  margin: 4px 0;
+  color: #aaaaaa;
+  font-size: 14px;
+}
+
+.download-section {
+  text-align: center;
+}
+
+.download-button {
+  display: inline-block;
+  background: #10a37f;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.download-button:hover {
+  background: #0d8c6d;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .export-options {
+    flex-direction: column;
+  }
+  
+  .export-option {
+    width: 100%;
+  }
+  
+  .export-description {
+    margin-top: 8px;
+  }
+  
+  .export-button {
+    width: 100%;
+  }
+}
