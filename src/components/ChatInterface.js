@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import AudioProcessingInterface from './AudioProcessingInterface';
@@ -6,6 +7,7 @@ import { sendChatMessage, processAudio } from '../services/api';
 import './ChatInterface.css';
 
 function ChatInterface({ selectedLLM, messages, setMessages, activeChat }) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -61,7 +63,7 @@ function ChatInterface({ selectedLLM, messages, setMessages, activeChat }) {
       const errorMessage = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: `Error: ${error.message || 'Failed to get response from the model'}`,
+        content: `Error: ${error.message || t('chat.errorResponse')}`,
         timestamp: new Date(),
         model: selectedLLM.name,
         isError: true
@@ -75,14 +77,14 @@ function ChatInterface({ selectedLLM, messages, setMessages, activeChat }) {
   return (
     <div className="chat-interface">
       <div className="chat-header">
-        <h2>{activeChat ? activeChat.title : 'Audio Engineering Assistant'}</h2>
+        <h2>{activeChat ? activeChat.title : t('chat.titleFallback')}</h2>
         <span className="chat-model">{selectedLLM.name}</span>
       </div>
       
       <AudioProcessingInterface />
       
       <div className="chat-section">
-        <h3>Chat with Audio Engineer</h3>
+        <h3>{t('chat.sectionTitle')}</h3>
         <MessageList messages={messages} isLoading={isLoading} />
         <div ref={messagesEndRef} />
         <MessageInput onSend={sendMessage} disabled={isLoading} />

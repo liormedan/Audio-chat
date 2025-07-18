@@ -1,0 +1,20 @@
+{
+  "chat": {
+    "titleFallback": "Audio Engineering Assistant",
+    "sectionTitle": "Chat with Audio Engineer",
+    "errorResponse": "Failed to get response from the model"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "database": "Database",
+    "apiKeys": "API Keys",
+    "helpFaq": "Help & FAQ",
+    "header": {
+      "appearance": "Appearance",
+      "database": "Database Configuration",
+      "apiKeys": "API Keys",
+      "helpFaq": "Help & FAQ"
+    }
+  }
+}
