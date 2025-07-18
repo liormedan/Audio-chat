@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Setting up AudioChat</title>
+</head>
+<body>
+  <h1>Setting up AudioChat...</h1>
+  <script>
+    // Set the defaultPage to 'chats' in localStorage
+    localStorage.setItem('defaultPage', 'chats');
+ECHO is off.
+    // Create a mock user for direct access
+    const mockUser = {
+      uid: "direct-access-user",
+      email: "direct-access@example.com",
+      displayName: "Direct Access User",
+      photoURL: null
+    };
+ECHO is off.
+    // Store the mock user in localStorage
+    localStorage.setItem('directAccessUser', JSON.stringify(mockUser));
+ECHO is off.
+    // Set the database provider to Firebase
+    localStorage.setItem('db_provider', 'firebase');
+ECHO is off.
+    // Close this window after setting localStorage values
+    document.write("^<p^>Setup complete! You can close this window.^</p^>");
+  </script>
+</body>
+</html>

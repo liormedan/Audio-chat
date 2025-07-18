@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>AudioChat - Direct Access</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      margin-top: 50px; 
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .loading { 
+      display: inline-block; 
+      width: 50px; 
+      height: 50px; 
+      border: 3px solid rgba(0,0,0,.3); 
+      border-radius: 50%; 
+      border-top-color: #4a90e2; 
+      animation: spin 1s ease-in-out infinite; 
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h1 { color: #4a90e2; }
+    p { margin: 20px 0; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Starting AudioChat...</h1>
+    <div class="loading"></div>
+    <p>Please wait while the application loads</p>
+  </div>
+  
+  <script>
+    // Clear all localStorage first
+    localStorage.clear();
+    
+    // Create a mock user for direct access
+    const mockUser = {
+      uid: "direct-access-user",
+      email: "direct-access@example.com",
+      displayName: "Direct Access User",
+      photoURL: null
+    };
+    
+    // Store the mock user in localStorage
+    localStorage.setItem('directAccessUser', JSON.stringify(mockUser));
+    
+    // Set the database provider to Firebase
+    localStorage.setItem('db_provider', 'firebase');
+    
+    // Set a flag to indicate we're in direct access mode
+    localStorage.setItem('isDirectAccessMode', 'true');
+    
+    // Set a flag to open chats directly - this will be checked in App.js
+    localStorage.setItem('defaultPage', 'chats');
+    
+    // Generate a unique timestamp to prevent caching
+    const timestamp = new Date().getTime();
+    
+    // Redirect to the main app with authenticated flag and cache-busting parameter
+    setTimeout(function() {
+      window.location.href = '/?authenticated=true&nocache=' + timestamp;
+    }, 1500);
+  </script>
+</body>
+</html>

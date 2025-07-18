@@ -1,8 +1,8 @@
-﻿.chat-sidebar {
+.chat-sidebar {
   width: 280px;
   height: 100%;
-  background-color: #f5f5f5;
-  border-right: 1px solid #e0e0e0;
+  background-color: var(--card);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -10,14 +10,14 @@
 
 .sidebar-header {
   padding: 1rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .sidebar-header h2 {
-  color: #333;
+  color: var(--foreground);
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
@@ -30,8 +30,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #4a90e2;
-  color: white;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   font-size: 1.2rem;
   font-weight: 500;
@@ -40,12 +40,13 @@
 }
 
 .new-chat-icon-button:hover {
-  background-color: #3a80d2;
+  background-color: var(--primary);
+  opacity: 0.9;
 }
 
 .new-chat-form {
   padding: 1rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -53,21 +54,21 @@
 
 .new-chat-input {
   padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: white;
-  color: #333;
+  border-radius: var(--radius);
+  border: 1px solid var(--input);
+  background-color: var(--background);
+  color: var(--foreground);
   font-size: 0.875rem;
 }
 
 .new-chat-input:focus {
   outline: none;
-  border-color: #4a90e2;
+  border-color: var(--ring);
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
 }
 
 .new-chat-input::placeholder {
-  color: #999;
+  color: var(--muted-foreground);
 }
 
 .new-chat-actions {
@@ -78,7 +79,7 @@
 
 .cancel-button, .create-button {
   padding: 0.5rem 0.75rem;
-  border-radius: 4px;
+  border-radius: var(--radius);
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -86,23 +87,25 @@
 }
 
 .cancel-button {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
   border: none;
 }
 
 .cancel-button:hover {
-  background-color: #e0e0e0;
+  background-color: var(--secondary);
+  opacity: 0.8;
 }
 
 .create-button {
-  background-color: #4a90e2;
-  color: white;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: none;
 }
 
 .create-button:hover {
-  background-color: #3a80d2;
+  background-color: var(--primary);
+  opacity: 0.9;
 }
 
 .chat-list {
@@ -118,7 +121,7 @@
   justify-content: center;
   padding: 2rem 1rem;
   text-align: center;
-  color: #999;
+  color: var(--muted-foreground);
 }
 
 .no-chats-message p {
@@ -127,9 +130,9 @@
 
 .start-chat-button {
   padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  background-color: #4a90e2;
-  color: white;
+  border-radius: var(--radius);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   font-size: 0.75rem;
   font-weight: 500;
@@ -138,13 +141,14 @@
 }
 
 .start-chat-button:hover {
-  background-color: #3a80d2;
+  background-color: var(--primary);
+  opacity: 0.9;
 }
 
 .chat-item {
   padding: 0.75rem;
   margin-bottom: 0.25rem;
-  border-radius: 4px;
+  border-radius: var(--radius);
   cursor: pointer;
   transition: background-color 0.2s;
   display: flex;
@@ -153,12 +157,12 @@
 }
 
 .chat-item:hover {
-  background-color: #e9f0f9;
+  background-color: var(--accent);
 }
 
 .chat-item.active {
-  background-color: #e9f0f9;
-  border-left: 2px solid #4a90e2;
+  background-color: var(--accent);
+  border-left: 2px solid var(--primary);
 }
 
 .chat-item-content {
@@ -167,7 +171,7 @@
 }
 
 .chat-item-title {
-  color: #333;
+  color: var(--foreground);
   font-weight: 500;
   margin-bottom: 0.25rem;
   white-space: nowrap;
@@ -179,7 +183,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #999;
+  color: var(--muted-foreground);
 }
 
 .delete-chat-button {
@@ -190,7 +194,7 @@
   align-items: center;
   justify-content: center;
   background-color: transparent;
-  color: #999;
+  color: var(--muted-foreground);
   border: none;
   font-size: 1rem;
   cursor: pointer;
@@ -203,8 +207,9 @@
 }
 
 .delete-chat-button:hover {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff0000;
+  background-color: var(--destructive);
+  opacity: 0.2;
+  color: var(--destructive);
 }
 
 /* Custom scrollbar for the chat list */
@@ -217,10 +222,12 @@
 }
 
 .chat-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--muted);
+  opacity: 0.5;
   border-radius: 3px;
 }
 
 .chat-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--muted);
+  opacity: 0.8;
 }

@@ -27,7 +27,13 @@ function AppContent() {
   const [selectedLLM, setSelectedLLM] = useState(AVAILABLE_LLMS[0]);
   const [messages, setMessages] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
-  const [activePage, setActivePage] = useState(null);
+  // Initialize activePage based on localStorage or default to null
+  const [activePage, setActivePage] = useState(() => {
+    // Check if we should open chats directly
+    const defaultPage = localStorage.getItem('defaultPage');
+    console.log('Initial defaultPage from localStorage:', defaultPage);
+    return defaultPage === 'chats' ? 'chats' : null;
+  });
   const [settingsTab, setSettingsTab] = useState('appearance');
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [isDirectAccess, setIsDirectAccess] = useState(false);
@@ -44,10 +50,11 @@ function AppContent() {
   // Listen for navigation events from MainLayout
   useEffect(() => {
     const handleNavigation = (event) => {
-      // Only handle navigation if user is authenticated
-      if (!user) return;
-      
       const { page } = event.detail;
+      
+      console.log('Navigation event received:', page); // Debug log
+      console.log('User authenticated:', !!user); // Debug log
+      console.log('Current activePage:', activePage); // Debug log
       
       // Update active page based on navigation event
       switch(page) {
@@ -78,6 +85,7 @@ function AppContent() {
     
     // Add event listener for navigation changes
     window.addEventListener('navigationChange', handleNavigation);
+    console.log('Event listener added for navigationChange'); // Debug log
     
     // Check URL parameters for initial navigation
     if (user) {
@@ -91,9 +99,10 @@ function AppContent() {
     
     // Clean up event listener
     return () => {
+      console.log('Removing event listener for navigationChange'); // Debug log
       window.removeEventListener('navigationChange', handleNavigation);
     };
-  }, [user, setActivePage, setSettingsTab]);
+  }, [user]);
 
   const handleSelectChat = (chat) => {
     setActiveChat(chat);
@@ -279,7 +288,24 @@ function AppContent() {
             </div>
           </div>
         ) : (
-          <HomePage />
+          // Show chats page by default instead of HomePage
+          <div className="page-container">
+            <div className="page-header">
+              <h2 className="page-title">Chats</h2>
+            </div>
+            <div className="chat-container">
+              <ChatSidebar 
+                onSelectChat={handleSelectChat}
+                activeChat={activeChat}
+              />
+              <ChatInterface 
+                selectedLLM={selectedLLM}
+                messages={messages}
+                setMessages={setMessages}
+                activeChat={activeChat}
+              />
+            </div>
+          </div>
         )}
       </MainLayout>
     </React.Suspense>
