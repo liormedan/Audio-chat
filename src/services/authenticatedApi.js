@@ -4,9 +4,7 @@ import authService from './auth';
 
 // Create an authenticated API instance
 const createAuthenticatedApi = async () => {
-  const baseURL = process.env.NODE_ENV === 'production' 
-    ? '/api' 
-    : 'http://localhost:8000/api';
+  const baseURL = process.env.REACT_APP_API_BASE || '/api';
   
   let headers = {
     'Content-Type': 'application/json',
