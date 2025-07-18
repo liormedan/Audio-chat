@@ -42,6 +42,7 @@ function MessageInput({ onSend, disabled }) {
       <textarea
         ref={textareaRef}
         value={message}
+        aria-label="Message input"
         onChange={(e) => {
           setMessage(e.target.value);
           adjustTextareaHeight();
