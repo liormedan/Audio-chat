@@ -5,12 +5,12 @@ import './AuthForms.css';
 
 // Firebase configuration for the AudioChat project
 const firebaseConfig = {
-  apiKey: "AIzaSyDJQw_TKGUQJGGwzS8LG9CZ_9QXW9Jj4Vc",
-  authDomain: "audiochat-466211.firebaseapp.com",
-  projectId: "audiochat-466211",
-  storageBucket: "audiochat-466211.appspot.com",
-  messagingSenderId: "484800218204",
-  appId: "1:484800218204:web:3b5e9f9d7d56a9e9f9d7d5"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 // Mock user data for direct access
