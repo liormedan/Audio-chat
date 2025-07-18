@@ -49,3 +49,10 @@ Once you've set up authentication, you can:
 - API keys are stored locally in your browser's localStorage
 - For production use, consider implementing additional security measures
 - Never share your API keys or include them in public repositories
+
+## Local OAuth Credentials
+
+The backend expects your Google OAuth client secret in `secrets/client_secret.json`.
+Download the client secret JSON from the Google Cloud Console and place the file
+at this path locally. Because the path is listed in `.gitignore`, it will not be
+committed to the repository.

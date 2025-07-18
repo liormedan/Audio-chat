@@ -24,3 +24,4 @@ secrets/
 *.pem
 *.key
 /secrets/
+secrets/client_secret.json
