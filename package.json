@@ -15,7 +15,8 @@
     "wavesurfer.js": "^6.6.4",
     "react-icons": "^4.12.0",
     "react-i18next": "^13.0.1",
-    "i18next": "^23.10.1"
+    "i18next": "^23.10.1",
+    "dotenv": "^10.0.0"
   },
   "scripts": {
     "start": "node -r dotenv/config node_modules/react-scripts/scripts/start.js",
