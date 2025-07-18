@@ -46,8 +46,15 @@ function MessageList({ messages, isLoading }) {
           <div className="message-bubble">
             <div className="message-content">
               {message.content}
+              <button
+                className="copy-button"
+                onClick={() => navigator.clipboard.writeText(message.content)}
+                title="Copy text"
+              >
+                Copy
+              </button>
               {message.audioUrl && (
-                <button 
+                <button
                   className={`audio-play-button ${playingAudio === message.id ? 'playing' : ''}`}
                   onClick={() => handlePlayAudio(message.audioUrl, message.id)}
                   title={playingAudio === message.id ? "Stop audio" : "Play audio"}
