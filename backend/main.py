@@ -28,6 +28,7 @@ try:
     from audio_export import audio_exporter
     from cache_manager import cache_manager
     from parallel_processor import parallel_processor
+    from llm_processor import llm_processor
 except ImportError:
     logging.warning("Audio processing libraries not installed. Some features may not work.")
     pass
@@ -656,8 +657,8 @@ async def process_audio(request: AudioProcessingRequest, current_user: dict = De
                 # Get processing steps from effects
                 processing_steps = [f"Applied {effect['type']} effect" for effect in request.effects]
             else:
-                # Parse natural language instructions first
-                effects_chain = audio_processor.parse_instructions(request.instructions, audio_analysis)
+                # Parse natural language instructions using LLM
+                effects_chain = llm_processor.process_instructions(request.instructions, audio_analysis)
                 
                 # Then apply effects in parallel
                 processed_audio = parallel_processor.process_audio_with_effects_parallel(
