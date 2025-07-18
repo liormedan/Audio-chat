@@ -288,24 +288,8 @@ function AppContent() {
             </div>
           </div>
         ) : (
-          // Show chats page by default instead of HomePage
-          <div className="page-container">
-            <div className="page-header">
-              <h2 className="page-title">Chats</h2>
-            </div>
-            <div className="chat-container">
-              <ChatSidebar 
-                onSelectChat={handleSelectChat}
-                activeChat={activeChat}
-              />
-              <ChatInterface 
-                selectedLLM={selectedLLM}
-                messages={messages}
-                setMessages={setMessages}
-                activeChat={activeChat}
-              />
-            </div>
-          </div>
+          // Show home page when no specific page is active
+          <HomePage />
         )}
       </MainLayout>
     </React.Suspense>
