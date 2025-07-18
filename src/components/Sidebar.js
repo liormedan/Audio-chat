@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Sidebar.css';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const Sidebar = ({ children, className }) => {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const toggleCollapsed = () => setCollapsed(!collapsed);
+
   return (
-    <div className={`sidebar ${className || ''}`}>
+    <div className={`sidebar ${collapsed ? 'collapsed' : ''} ${className || ''}`}>
+      <button
+        className="sidebar-collapse-button"
+        onClick={toggleCollapsed}
+        title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        {collapsed ? <FaChevronRight /> : <FaChevronLeft />}
+      </button>
       {children}
     </div>
   );
