@@ -22,6 +22,9 @@ matplotlib
 
 # Authentication
 PyJWT
+google-auth
+firebase-admin
+supabase
 
 # Advanced audio processing
 pedalboard
