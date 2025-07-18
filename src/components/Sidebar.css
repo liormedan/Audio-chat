@@ -10,6 +10,10 @@
   gap: 1rem;
 }
 
+.sidebar.collapsed {
+  width: 60px;
+}
+
 .sidebar-section {
   display: flex;
   flex-direction: column;
@@ -68,6 +72,37 @@
 
 .sidebar-nav-item-text {
   flex: 1;
+}
+
+.sidebar-collapse-button {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-collapse-button:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.sidebar.collapsed .sidebar-nav-item-text,
+.sidebar.collapsed .sidebar-section-title,
+.sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .theme-toggle-text,
+.sidebar.collapsed .user-info {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-nav-item {
+  justify-content: center;
 }
 
 /* Custom scrollbar */
