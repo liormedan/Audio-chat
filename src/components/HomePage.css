@@ -1,3 +1,4 @@
+
 .home-page {
   display: flex;
   flex-direction: column;
@@ -24,29 +25,35 @@
   margin-bottom: 30px;
 }
 
-.redirecting-message {
+.home-description {
   font-size: 1rem;
-  color: #888;
-  margin-top: 20px;
-  font-style: italic;
+  color: #666;
+  margin-bottom: 20px;
 }
 
-.loading-container {
+.quick-links {
   display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-top: 20px;
 }
 
-.loading-spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-radius: 50%;
-  border-top: 4px solid #4a90e2;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
+.quick-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 2.5rem;
+  padding: 0 1rem;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.quick-link-button:hover {
+  background-color: hsl(var(--primary) / 0.8);
 }
