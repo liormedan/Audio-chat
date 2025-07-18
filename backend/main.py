@@ -15,8 +15,12 @@ from datetime import datetime
 import uuid
 import numpy as np
 from pathlib import Path
-import jwt
 import requests
+from google.oauth2 import id_token as google_id_token
+from google.auth.transport import requests as google_requests
+import firebase_admin
+from firebase_admin import auth as firebase_auth, credentials as firebase_credentials
+from supabase import create_client, Client
 
 # Audio processing imports
 try:
@@ -98,117 +102,79 @@ security = HTTPBearer()
 async def verify_google_token(token: str):
     """Verify Google ID token"""
     try:
-        # Load Google client ID from environment
-        google_client_id = os.environ.get("GOOGLE_CLIENT_ID")
-        if not google_client_id:
-            logger.warning("GOOGLE_CLIENT_ID not set in environment")
-            # Use the client ID from the client_secret file as fallback
-            google_client_id = "484800218204-8snu9s0vvc9176aqug9759ulh1rio431.apps.googleusercontent.com"
-        
-        # In production, you would verify the token with Google's API
-        # For development purposes, we'll use a simplified approach
-        # This should be replaced with proper verification in production
-        
-        # Decode the token (without verification for development)
-        # WARNING: In production, use proper verification with Google's API
-        try:
-            # Simple JWT decode without verification (FOR DEVELOPMENT ONLY)
-            payload = jwt.decode(token, options={"verify_signature": False})
-            
-            # Check if token is for our app
-            if payload.get("aud") != google_client_id:
-                logger.warning(f"Token audience mismatch: {payload.get('aud')} vs {google_client_id}")
-                return None
-                
-            return {
-                "uid": payload.get("sub"),
-                "email": payload.get("email"),
-                "name": payload.get("name")
-            }
-        except jwt.PyJWTError as e:
-            logger.error(f"JWT decode error: {str(e)}")
-            return None
-            
+        google_client_id = os.environ.get("GOOGLE_CLIENT_ID") or "484800218204-8snu9s0vvc9176aqug9759ulh1rio431.apps.googleusercontent.com"
+        idinfo = google_id_token.verify_oauth2_token(token, google_requests.Request(), google_client_id)
+        return {
+            "uid": idinfo.get("sub"),
+            "email": idinfo.get("email"),
+            "name": idinfo.get("name"),
+        }
     except Exception as e:
-        logger.error(f"Error verifying Google token: {str(e)}")
-        return None
+        logger.error(f"Google token verification failed: {str(e)}")
+        raise HTTPException(status_code=401, detail="Invalid authentication token")
 
 async def verify_firebase_token(token: str):
     """Verify Firebase ID token"""
     try:
-        # For development, we'll use a simplified approach
-        # This should be replaced with Firebase Admin SDK verification in production
-        
-        # Try to decode the token (without verification for development)
-        try:
-            # Simple JWT decode without verification (FOR DEVELOPMENT ONLY)
-            payload = jwt.decode(token, options={"verify_signature": False})
-            
-            # Check if it looks like a Firebase token
-            if "firebase" not in payload:
-                return None
-                
-            return {
-                "uid": payload.get("user_id") or payload.get("sub"),
-                "email": payload.get("email"),
-                "name": payload.get("name")
-            }
-        except jwt.PyJWTError:
-            return None
-            
+        if not firebase_admin._apps:
+            try:
+                cred_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+                if cred_json:
+                    cred = firebase_credentials.Certificate(json.loads(cred_json))
+                else:
+                    cred = firebase_credentials.ApplicationDefault()
+                firebase_admin.initialize_app(cred)
+            except Exception:
+                firebase_admin.initialize_app()
+        decoded = firebase_auth.verify_id_token(token)
+        return {
+            "uid": decoded.get("uid") or decoded.get("sub"),
+            "email": decoded.get("email"),
+            "name": decoded.get("name"),
+        }
     except Exception as e:
-        logger.error(f"Error verifying Firebase token: {str(e)}")
-        return None
+        logger.error(f"Firebase token verification failed: {str(e)}")
+        raise HTTPException(status_code=401, detail="Invalid authentication token")
 
 async def verify_supabase_token(token: str):
     """Verify Supabase JWT token"""
     try:
-        # For development, we'll use a simplified approach
-        # This should be replaced with proper JWT verification in production
-        
-        # Try to decode the token (without verification for development)
-        try:
-            # Simple JWT decode without verification (FOR DEVELOPMENT ONLY)
-            payload = jwt.decode(token, options={"verify_signature": False})
-            
-            # Check if it looks like a Supabase token
-            if "aud" not in payload or payload.get("aud") != "authenticated":
-                return None
-                
-            return {
-                "sub": payload.get("sub"),
-                "email": payload.get("email")
-            }
-        except jwt.PyJWTError:
-            return None
-            
+        supabase_url = os.environ.get("SUPABASE_URL")
+        supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_ANON_KEY")
+        if not supabase_url or not supabase_key:
+            raise ValueError("Supabase credentials not configured")
+        client: Client = create_client(supabase_url, supabase_key)
+        user_resp = client.auth.get_user(token)
+        if not user_resp or not user_resp.user:
+            raise ValueError("Invalid token")
+        user = user_resp.user
+        return {"sub": user.id, "email": user.email}
     except Exception as e:
-        logger.error(f"Error verifying Supabase token: {str(e)}")
-        return None
+        logger.error(f"Supabase token verification failed: {str(e)}")
+        raise HTTPException(status_code=401, detail="Invalid authentication token")
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get current authenticated user"""
     token = credentials.credentials
-    
-    # Try Google OAuth first
-    user = await verify_google_token(token)
-    if user:
-        return {"id": user["uid"], "email": user.get("email"), "provider": "google"}
-    
-    # Try Firebase
-    user = await verify_firebase_token(token)
-    if user:
-        return {"id": user["uid"], "email": user.get("email"), "provider": "firebase"}
-    
-    # Try Supabase
-    user = await verify_supabase_token(token)
-    if user:
-        return {"id": user["sub"], "email": user.get("email"), "provider": "supabase"}
-    
+
+    verifiers = [
+        (verify_google_token, "uid", "google"),
+        (verify_firebase_token, "uid", "firebase"),
+        (verify_supabase_token, "sub", "supabase"),
+    ]
+
+    for verifier, id_key, provider in verifiers:
+        try:
+            user = await verifier(token)
+            if user:
+                return {"id": user[id_key], "email": user.get("email"), "provider": provider}
+        except HTTPException:
+            continue
+
     # For development, allow a special test token
     if token == "dev_test_token":
         return {"id": "test_user_123", "email": "test@example.com", "provider": "development"}
-    
+
     raise HTTPException(status_code=401, detail="Invalid authentication token")
 
 # Routes
