@@ -15,7 +15,11 @@ export function SettingsProvider({ children }) {
       codeSyntaxHighlighting: true,
       codeLineNumbers: true,
       autoPlayAudio: true,
-      selectedVoice: 'default'
+      selectedVoice: 'default',
+      userProfile: {
+        displayName: '',
+        email: ''
+      }
     };
   });
 
@@ -41,7 +45,11 @@ export function SettingsProvider({ children }) {
       codeSyntaxHighlighting: true,
       codeLineNumbers: true,
       autoPlayAudio: true,
-      selectedVoice: 'default'
+      selectedVoice: 'default',
+      userProfile: {
+        displayName: '',
+        email: ''
+      }
     };
     setSettings(defaultSettings);
   };

@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import './ProfileMenu.css';
 import {
   FaCog,
@@ -8,11 +10,16 @@ import {
   FaPuzzlePiece,
   FaQuestionCircle,
   FaSignOutAlt,
+  FaUser,
 } from 'react-icons/fa';
 
 function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { user } = useAuth();
+  const { settings } = useSettings();
+  const displayName = settings.userProfile.displayName || user?.displayName || 'User';
+  const email = settings.userProfile.email || user?.email || 'user@example.com';
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -46,15 +53,15 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
           <div className="profile-header">
             <div className="profile-info">
               <div className="profile-name">
-                User
+                {displayName}
                 <span className="premium-badge">Plus</span>
               </div>
-              <div className="profile-email">user@example.com</div>
+              <div className="profile-email">{email}</div>
             </div>
           </div>
           
           <div className="menu-items">
-            <button 
+            <button
               className="menu-item"
               onClick={() => {
                 onOpenPage('settings');
@@ -64,7 +71,17 @@ function ProfileMenu({ onOpenPage = () => {}, onLogout = () => {} }) {
               <FaCog aria-label="Settings" className="menu-icon" />
               Settings
             </button>
-            <button 
+            <button
+              className="menu-item"
+              onClick={() => {
+                onOpenPage('user-profile');
+                setIsOpen(false);
+              }}
+            >
+              <FaUser aria-label="Profile" className="menu-icon" />
+              Profile
+            </button>
+            <button
               className="menu-item"
               onClick={() => {
                 onOpenPage('appearance');

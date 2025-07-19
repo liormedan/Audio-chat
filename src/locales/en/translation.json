@@ -10,11 +10,13 @@
     "database": "Database",
     "apiKeys": "API Keys",
     "helpFaq": "Help & FAQ",
+    "userProfile": "User Profile",
     "header": {
       "appearance": "Appearance",
       "database": "Database Configuration",
       "apiKeys": "API Keys",
-      "helpFaq": "Help & FAQ"
+      "helpFaq": "Help & FAQ",
+      "userProfile": "User Profile"
     }
   }
 }

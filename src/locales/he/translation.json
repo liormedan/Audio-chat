@@ -10,11 +10,13 @@
     "database": "בסיס נתונים",
     "apiKeys": "מפתחות API",
     "helpFaq": "עזרה ושאלות נפוצות",
+    "userProfile": "פרופיל משתמש",
     "header": {
       "appearance": "מראה",
       "database": "תצורת בסיס נתונים",
       "apiKeys": "מפתחות API",
-      "helpFaq": "עזרה ושאלות נפוצות"
+      "helpFaq": "עזרה ושאלות נפוצות",
+      "userProfile": "פרופיל משתמש"
     }
   }
 }
