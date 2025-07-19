@@ -28,11 +28,10 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
 
   return (
     <div className="settings-container">
-      <div>
-        <div className="settings-sidebar">
+      <div className="settings-sidebar">
           <h2>{t('settings.title')}</h2>
           <nav className="settings-nav">
-            <button 
+            <button
               className={`settings-nav-item ${activePage === 'appearance' ? 'active' : ''}`}
               onClick={() => setActivePage('appearance')}
             >
@@ -61,8 +60,8 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
               {t('settings.helpFaq')}
             </button>
           </nav>
-        </div>
-        <div className="settings-content">
+      </div>
+      <div className="settings-content">
           <div className="settings-header">
             <h3>
               {activePage === 'appearance' && t('settings.header.appearance')}
@@ -70,12 +69,11 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
               {activePage === 'apiKeys' && t('settings.header.apiKeys')}
               {activePage === 'helpFaq' && t('settings.header.helpFaq')}
             </h3>
-            <button className="close-button" onClick={onClose} aria-label="Close settings">×</button>
+            <button className="settings-close" onClick={onClose} aria-label="Close settings">×</button>
           </div>
           <div className="settings-body">
             {renderActivePage()}
           </div>
-        </div>
       </div>
     </div>
   );
