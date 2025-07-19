@@ -1,0 +1,11 @@
+.audio-spectrum {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.audio-spectrum canvas {
+  width: 100%;
+  height: 150px;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+}

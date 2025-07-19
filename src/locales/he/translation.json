@@ -1,0 +1,22 @@
+{
+  "chat": {
+    "titleFallback": "עוזר הנדסת אודיו",
+    "sectionTitle": "צ'אט עם מהנדס אודיו",
+    "errorResponse": "נכשל בקבלת תגובה מהמודל"
+  },
+  "settings": {
+    "title": "הגדרות",
+    "appearance": "מראה",
+    "database": "בסיס נתונים",
+    "apiKeys": "מפתחות API",
+    "helpFaq": "עזרה ושאלות נפוצות",
+    "userProfile": "פרופיל משתמש",
+    "header": {
+      "appearance": "מראה",
+      "database": "תצורת בסיס נתונים",
+      "apiKeys": "מפתחות API",
+      "helpFaq": "עזרה ושאלות נפוצות",
+      "userProfile": "פרופיל משתמש"
+    }
+  }
+}

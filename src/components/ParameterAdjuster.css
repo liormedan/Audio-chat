@@ -1,0 +1,160 @@
+.parameter-adjuster {
+  margin-top: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #333;
+}
+
+.parameter-adjuster h4 {
+  margin: 0 0 16px 0;
+  color: #e2e8f0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.effects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.effect-item {
+  background: #222;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.effect-header {
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.effect-header:hover {
+  background: #2a2a2a;
+}
+
+.effect-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.effect-icon {
+  color: #10a37f;
+  font-size: 10px;
+}
+
+.effect-name {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.effect-parameters {
+  padding: 16px;
+  background: #1a1a1a;
+  border-top: 1px solid #333;
+}
+
+.parameter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.parameter-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.parameter-slider label {
+  color: #aaaaaa;
+  font-size: 12px;
+  width: 80px;
+}
+
+.parameter-slider input[type="range"] {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #333;
+  border-radius: 2px;
+  outline: none;
+}
+
+.parameter-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #10a37f;
+  cursor: pointer;
+}
+
+.parameter-slider input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #10a37f;
+  cursor: pointer;
+  border: none;
+}
+
+.parameter-value {
+  color: #e2e8f0;
+  font-size: 12px;
+  width: 60px;
+  text-align: right;
+}
+
+.no-parameters {
+  color: #aaaaaa;
+  font-size: 12px;
+  text-align: center;
+  margin: 0;
+}
+
+.apply-changes {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.apply-button {
+  background: #10a37f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.apply-button:hover {
+  background: #0d8c6d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .parameter-slider {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .parameter-slider label {
+    width: 100%;
+  }
+  
+  .parameter-value {
+    width: 100%;
+    text-align: left;
+  }
+}

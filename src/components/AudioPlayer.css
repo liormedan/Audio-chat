@@ -1,0 +1,113 @@
+.audio-player {
+  background-color: #222222;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.audio-player.original {
+  border-left: 4px solid #007bff;
+}
+
+.audio-player.processed {
+  border-left: 4px solid #10a37f;
+}
+
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.player-title {
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.player-badge {
+  background-color: #333333;
+  color: #aaaaaa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.audio-player.processed .player-badge {
+  background-color: rgba(16, 163, 127, 0.2);
+  color: #10a37f;
+}
+
+.audio-player.original .player-badge {
+  background-color: rgba(0, 123, 255, 0.2);
+  color: #007bff;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.play-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #333333;
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.play-button:hover {
+  background-color: #444444;
+}
+
+.play-button.playing {
+  background-color: #10a37f;
+}
+
+.play-button.playing:hover {
+  background-color: #0d8c6d;
+}
+
+.time-display {
+  color: #aaaaaa;
+  font-size: 0.9rem;
+  min-width: 100px;
+}
+
+.seek-bar {
+  flex: 1;
+  height: 8px;
+  position: relative;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.seek-bar-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333333;
+}
+
+.seek-bar-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #10a37f;
+  transition: width 0.1s linear;
+}

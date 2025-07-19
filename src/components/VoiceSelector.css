@@ -1,0 +1,61 @@
+.voice-selector {
+  margin-bottom: 2rem;
+}
+
+.voice-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.voice-option {
+  background-color: #222222;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.voice-option:hover {
+  background-color: #333333;
+  border-color: #555555;
+}
+
+.voice-option.selected {
+  background-color: rgba(16, 163, 127, 0.1);
+  border-color: #10a37f;
+}
+
+.voice-option-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.voice-name {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.voice-details {
+  color: #aaaaaa;
+  font-size: 0.8rem;
+}
+
+.voice-selected-indicator {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 20px;
+  height: 20px;
+  background-color: #10a37f;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}

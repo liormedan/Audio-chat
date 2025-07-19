@@ -1,0 +1,35 @@
+## enviroment
+uv
+#web 
+fastapi
+uvicorn
+python-multipart
+pydantic
+python-dotenv
+httpx
+requests
+openai
+
+# Audio processing libraries
+librosa
+soundfile
+pydub
+numpy
+scipy
+
+# For visualization
+matplotlib
+
+# Authentication
+PyJWT
+google-auth
+firebase-admin
+supabase
+
+# Advanced audio processing
+pedalboard
+ffmpeg-python
+
+# Advanced audio processing
+# spleeter  # Commented out due to Python 3.13 compatibility issues
+# tensorflow  # Commented out due to Python 3.13 compatibility issues

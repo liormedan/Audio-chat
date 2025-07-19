@@ -1,0 +1,10 @@
+{
+  "id": "loudness_metering",
+  "name": "Professional Loudness Metering",
+  "description": "Industry-standard loudness measurements including LUFS, RMS, True Peak, and dynamic range analysis with recommendations",
+  "version": "1.0.0",
+  "category": "analysis",
+  "premium": false,
+  "dependencies": ["numpy", "scipy", "librosa"],
+  "module_path": "extensions.modules.loudness_metering"
+}

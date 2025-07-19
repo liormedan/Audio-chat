@@ -1,0 +1,234 @@
+.audio-analysis-display {
+  background-color: hsl(var(--card));
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.analysis-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.tab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  background-color: hsl(var(--secondary) / 0.8);
+}
+
+.tab-button.active {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.analysis-content {
+  min-height: 200px;
+}
+
+/* Overview tab */
+.analysis-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-item {
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+}
+
+.summary-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.summary-value {
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.analysis-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.meter-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meter-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  width: 100px;
+}
+
+.meter-bar {
+  flex: 1;
+  height: 0.5rem;
+  background-color: hsl(var(--secondary));
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background-color: hsl(var(--primary));
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.meter-value {
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  width: 60px;
+  text-align: right;
+}
+
+/* Spectral tab */
+.analysis-spectral {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.spectral-item {
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.spectral-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.spectral-value {
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.spectral-description {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+/* Dynamics tab */
+.analysis-dynamics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.dynamics-item {
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.dynamics-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.dynamics-value {
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.dynamics-description {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+/* Musical tab */
+.analysis-musical {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.musical-item {
+  background-color: hsl(var(--secondary));
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.musical-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.musical-value {
+  color: hsl(var(--foreground));
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.musical-description {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .analysis-summary,
+  .analysis-dynamics,
+  .analysis-musical {
+    grid-template-columns: 1fr;
+  }
+  
+  .meter-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .meter-label {
+    width: 100%;
+  }
+  
+  .meter-value {
+    width: 100%;
+    text-align: left;
+  }
+}

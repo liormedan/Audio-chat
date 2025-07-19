@@ -1,0 +1,121 @@
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.home-header {
+  margin-bottom: 40px;
+}
+
+.home-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #4a90e2;
+}
+
+.home-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.home-description {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.quick-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.quick-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  height: 2.5rem;
+  padding: 0 1rem;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.quick-link-icon {
+  margin-right: 0.5rem;
+}
+
+.quick-link-button:hover {
+  background-color: hsl(var(--primary) / 0.8);
+}
+
+.recent-chats {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.recent-chats-title {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.recent-chat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-chat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.recent-chat-item:hover {
+  background-color: var(--accent);
+}
+
+.recent-chat-info {
+  overflow: hidden;
+}
+
+.recent-chat-name {
+  display: block;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-chat-date {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.recent-chat-icon {
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}

@@ -1,0 +1,10 @@
+{
+  "id": "spectrum_analyzer",
+  "name": "Advanced Spectrum Analyzer",
+  "description": "High-resolution spectrum analysis with problem frequency detection and comparison to professional reference spectrums",
+  "version": "1.0.0",
+  "category": "analysis",
+  "premium": true,
+  "dependencies": ["numpy", "scipy", "librosa"],
+  "module_path": "extensions.modules.spectrum_analyzer"
+}
