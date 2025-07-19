@@ -74,6 +74,10 @@ function AppContent() {
           setActivePage('settings');
           setSettingsTab('appearance');
           break;
+        case 'user-profile':
+          setActivePage('settings');
+          setSettingsTab('userProfile');
+          break;
         case 'help':
           setActivePage('settings');
           setSettingsTab('helpFaq');
@@ -127,6 +131,9 @@ function AppContent() {
           break;
         case 'database':
           setSettingsTab('database');
+          break;
+        case 'user-profile':
+          setSettingsTab('userProfile');
           break;
         case 'help-faq':
           setSettingsTab('helpFaq');

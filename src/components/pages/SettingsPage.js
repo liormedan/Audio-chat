@@ -4,8 +4,9 @@ import AppearancePage from './AppearancePage';
 import ApiKeysPage from './ApiKeysPage';
 import HelpFaqPage from './HelpFaqPage';
 import DatabaseConfigPage from './DatabaseConfigPage';
+import UserProfilePage from './UserProfilePage';
 import './Pages.css';
-import { FaSlidersH, FaDatabase, FaKey, FaQuestionCircle } from 'react-icons/fa';
+import { FaSlidersH, FaDatabase, FaKey, FaQuestionCircle, FaUser } from 'react-icons/fa';
 
 function SettingsPage({ onClose, initialTab = 'appearance' }) {
   const { t } = useTranslation();
@@ -19,6 +20,8 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
         return <ApiKeysPage />;
       case 'database':
         return <DatabaseConfigPage />;
+      case 'userProfile':
+        return <UserProfilePage />;
       case 'helpFaq':
         return <HelpFaqPage />;
       default:
@@ -38,7 +41,14 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
               <FaSlidersH aria-label="Appearance" className="settings-nav-icon" />
               {t('settings.appearance')}
             </button>
-            <button 
+            <button
+              className={`settings-nav-item ${activePage === 'userProfile' ? 'active' : ''}`}
+              onClick={() => setActivePage('userProfile')}
+            >
+              <FaUser aria-label="Profile" className="settings-nav-icon" />
+              {t('settings.userProfile')}
+            </button>
+            <button
               className={`settings-nav-item ${activePage === 'database' ? 'active' : ''}`}
               onClick={() => setActivePage('database')}
             >
@@ -63,12 +73,13 @@ function SettingsPage({ onClose, initialTab = 'appearance' }) {
       </div>
       <div className="settings-content">
           <div className="settings-header">
-            <h3>
-              {activePage === 'appearance' && t('settings.header.appearance')}
-              {activePage === 'database' && t('settings.header.database')}
-              {activePage === 'apiKeys' && t('settings.header.apiKeys')}
-              {activePage === 'helpFaq' && t('settings.header.helpFaq')}
-            </h3>
+          <h3>
+            {activePage === 'appearance' && t('settings.header.appearance')}
+            {activePage === 'database' && t('settings.header.database')}
+            {activePage === 'apiKeys' && t('settings.header.apiKeys')}
+            {activePage === 'userProfile' && t('settings.header.userProfile')}
+            {activePage === 'helpFaq' && t('settings.header.helpFaq')}
+          </h3>
             <button className="settings-close" onClick={onClose} aria-label="Close settings">×</button>
           </div>
           <div className="settings-body">
